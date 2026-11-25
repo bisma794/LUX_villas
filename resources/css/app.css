@@ -1,0 +1,46 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Abhaya Libre', Georgia, serif;
+    --font-script: 'Alex Brush', cursive;
+    --font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-faustina: 'Faustina', Georgia, serif;
+    --font-fraunces: 'Fraunces', Georgia, serif;
+    --font-inria: 'Inria Serif', Georgia, serif;
+    --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --font-poppins: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-lato: 'Lato', ui-sans-serif, system-ui, sans-serif;
+    --color-ink: #10221C;
+    --color-deep: #0E1A14;
+    --color-tan: #B9975B;
+    --color-gold: #C9A86A;
+    --color-wa: #25D366;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif; color: #10221C; background: #fff; }
+h1, h2, h3, .serif { font-family: 'Abhaya Libre', Georgia, serif; font-weight: 500; }
+.font-heading { font-family: 'Abhaya Libre', Georgia, serif; font-weight: 500; }
+.font-script, .script { font-family: 'Alex Brush', cursive; font-style: normal; font-weight: 400; }
+.font-source, .font-body { font-family: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif; }
+.eyebrow { font-family: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif; letter-spacing: .22em; text-transform: uppercase; font-size: 13px; font-weight: 600; }
+.btn-tan { font-family: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif; background: #B9975B; color: #fff; border-radius: 9999px; padding: 14px 28px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+.btn-tan:hover { background: #a5864e; }
+.btn-dark { font-family: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif; background: #10221C; color: #fff; border-radius: 9999px; padding: 14px 28px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+.btn-wa { font-family: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif; background: #25D366; color: #fff; border-radius: 9999px; padding: 14px 28px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+.card-img { border-radius: 12px; object-fit: cover; width: 100%; }
+.chip { border: 1px solid #d8d8d8; border-radius: 9999px; padding: 8px 16px; font-size: 14px; }
+.faq-a { display: none; }
+.faq-item.open .faq-a { display: block; }
+.faq-item.open .faq-plus { transform: rotate(45deg); }
+.faq-plus { transition: transform .2s; }
+.step-opt { border: 2px solid #e5e5e5; border-radius: 14px; padding: 20px; cursor: pointer; background: #fff; text-align: left; width: 100%; }
+.step-opt:hover { border-color: #B9975B; }
+.step-opt.selected { border-color: #10221C; background: #10221C; color: #fff; }
+.step-opt.selected p { color: #d5d5d5; }

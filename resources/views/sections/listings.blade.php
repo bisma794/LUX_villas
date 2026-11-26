@@ -8,9 +8,28 @@
 
   {{-- Tabs: Villas / Town Houses (Buttons in Inter) --}}
   @if(!empty($c['tabs']))
+  <style>
+    .lux-listing-tab {
+      background-color: transparent;
+      color: #525252;
+      border: 1px solid #e5e5e5;
+      transition: all 0.15s ease;
+    }
+    .lux-listing-tab:hover,
+    .lux-listing-tab.active-tab {
+      background-color: #B38855 !important;
+      color: #ffffff !important;
+      border-color: #B38855 !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+  </style>
   <div class="flex gap-3 mb-10 font-inter">
     @foreach($c['tabs'] as $i => $t)
-    <button data-tab="{{ $t['key'] }}" class="px-7 py-2.5 rounded-[8px] text-sm font-medium transition-all font-inter cursor-pointer {{ $i === 0 ? 'bg-[#B38855] text-white shadow-sm' : 'bg-transparent text-neutral-600 hover:text-black border border-neutral-200' }}">
+    <button
+      type="button"
+      data-tab="{{ $t['key'] }}"
+      class="lux-listing-tab px-7 py-2.5 rounded-[8px] text-sm font-medium font-inter cursor-pointer {{ $i === 0 ? 'active-tab' : '' }}"
+    >
       {{ $t['label'] }}
     </button>
     @endforeach
@@ -65,7 +84,16 @@
 
   @foreach($c['tabs'] as $i => $t)
   @php 
-    $panel = !empty($customAssignedItems) ? $customAssignedItems : (($c['panels'] ?? [])[$t['key']] ?? []); 
+    if (!empty($customAssignedItems)) {
+      $isTownhouseTab = str_contains(strtolower($t['key'] . ' ' . $t['label']), 'town');
+      $filtered = array_values(array_filter($customAssignedItems, function ($it) use ($isTownhouseTab) {
+        $isTown = str_contains(strtolower(($it['title'] ?? '') . ' ' . ($it['link'] ?? '')), 'townhouse');
+        return $isTownhouseTab ? $isTown : !$isTown;
+      }));
+      $panel = !empty($filtered) ? $filtered : (($c['panels'] ?? [])[$t['key']] ?? $customAssignedItems);
+    } else {
+      $panel = ($c['panels'] ?? [])[$t['key']] ?? [];
+    }
   @endphp
   <div data-panel="{{ $t['key'] }}" class="{{ $i === 0 ? '' : 'hidden' }}">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
@@ -142,3 +170,21 @@
   @endforeach
   @endif
 </section>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-tabs]').forEach(function(section) {
+    const tabBtns = section.querySelectorAll('.lux-listing-tab[data-tab]');
+    const panels = section.querySelectorAll('[data-panel]');
+    tabBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const key = btn.getAttribute('data-tab');
+        tabBtns.forEach(function(b) { b.classList.remove('active-tab'); });
+        btn.classList.add('active-tab');
+        panels.forEach(function(p) {
+          p.classList.toggle('hidden', p.getAttribute('data-panel') !== key);
+        });
+      });
+    });
+  });
+});
+</script>

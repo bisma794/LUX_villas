@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
 <title>{{ $title ?? 'Dashboard' }} — LUX Villa Dubai CMS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,10 +16,19 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <style>
   body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #FAF8F5; color: #10221C; }
-  .note-editor.note-frame { border: 1px solid #E2E8F0 !important; border-radius: 14px !important; overflow: hidden !important; background: #FAF8F5 !important; }
-  .note-toolbar { background: white !important; border-bottom: 1px solid #E2E8F0 !important; padding: 8px 12px !important; }
-  .note-editable { background: white !important; min-height: 280px !important; font-family: 'Inter', sans-serif !important; font-size: 14px !important; color: #1E293B !important; }
+  .note-editor.note-frame { border: 1px solid #E2E8F0 !important; border-radius: 14px !important; overflow: visible !important; background: #FAF8F5 !important; }
+  .note-toolbar { background: white !important; border-bottom: 1px solid #E2E8F0 !important; border-radius: 14px 14px 0 0 !important; padding: 8px 12px !important; }
+  .note-editable { background: white !important; min-height: 280px !important; border-radius: 0 0 14px 14px !important; font-family: 'Inter', sans-serif !important; font-size: 14px !important; color: #1E293B !important; line-height: 1.65 !important; }
+  .note-editable h1 { font-family: 'Abhaya Libre', Georgia, serif !important; font-size: 32px !important; font-weight: 600 !important; line-height: 1.2 !important; color: #10221C !important; margin: 12px 0 8px !important; }
+  .note-editable h2 { font-family: 'Abhaya Libre', Georgia, serif !important; font-size: 26px !important; font-weight: 600 !important; line-height: 1.25 !important; color: #10221C !important; margin: 10px 0 8px !important; }
+  .note-editable h3 { font-family: 'Abhaya Libre', Georgia, serif !important; font-size: 21px !important; font-weight: 600 !important; line-height: 1.3 !important; color: #10221C !important; margin: 8px 0 6px !important; }
+  .note-editable h4 { font-size: 17px !important; font-weight: 700 !important; color: #10221C !important; margin: 6px 0 4px !important; }
+  .note-editable p, .note-editable div:not(.note-handle):not(.note-control-selection) { font-family: 'Inter', sans-serif !important; font-size: 14px !important; font-weight: 400 !important; color: #334155 !important; margin-bottom: 8px !important; }
+  .note-editable ul { list-style-type: disc !important; padding-left: 22px !important; margin: 8px 0 !important; }
+  .note-editable ol { list-style-type: decimal !important; padding-left: 22px !important; margin: 8px 0 !important; }
+  .note-dropdown-menu { z-index: 9999 !important; }
   .note-btn { background: white !important; border: 1px solid #E2E8F0 !important; border-radius: 8px !important; padding: 4px 8px !important; font-size: 12px !important; }
+  [draggable="true"] img { pointer-events: none; -webkit-user-drag: none; user-drag: none; }
 </style>
 </head>
 <body class="bg-[#FAF8F5] text-[#10221C] antialiased min-h-screen flex flex-col font-inter">
@@ -132,28 +143,6 @@
           </p>
 
           <nav class="space-y-1">
-            {{-- Developer --}}
-            <a 
-              href="{{ route('admin.developers') }}" 
-              class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-[13px] font-semibold transition-all {{ request()->routeIs('admin.developers') ? 'bg-[#F2ECE3] text-[#10221C] font-bold border-l-4 border-[#C5A47E]' : 'text-neutral-600 hover:bg-neutral-100 hover:text-[#10221C]' }}"
-            >
-              <svg class="w-4 h-4 {{ request()->routeIs('admin.developers') ? 'text-[#C5A47E]' : 'text-neutral-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-              </svg>
-              <span>Developer</span>
-            </a>
-
-            {{-- City --}}
-            <a 
-              href="{{ route('admin.cities') }}" 
-              class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-[13px] font-semibold transition-all {{ request()->routeIs('admin.cities') ? 'bg-[#F2ECE3] text-[#10221C] font-bold border-l-4 border-[#C5A47E]' : 'text-neutral-600 hover:bg-neutral-100 hover:text-[#10221C]' }}"
-            >
-              <svg class="w-4 h-4 {{ request()->routeIs('admin.cities') ? 'text-[#C5A47E]' : 'text-neutral-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
-              </svg>
-              <span>City</span>
-            </a>
-
             {{-- Community (Matching reference styling: Tan active highlight) --}}
             <a 
               href="{{ route('admin.communities') }}" 
@@ -282,5 +271,54 @@
 
   </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof $ === 'undefined') return;
+
+  function cleanSummernoteBlockStyles(editableEl) {
+    if (!editableEl) return;
+    editableEl.querySelectorAll('p, h1, h2, h3, h4, h5, h6').forEach(function(block) {
+      if (block.style) {
+        block.style.fontSize = '';
+        block.style.fontWeight = '';
+        block.style.fontFamily = '';
+        block.style.lineHeight = '';
+        if (!block.getAttribute('style')) block.removeAttribute('style');
+      }
+      block.querySelectorAll('span[style]').forEach(function(sp) {
+        sp.style.fontSize = '';
+        sp.style.fontWeight = '';
+        sp.style.fontFamily = '';
+        sp.style.lineHeight = '';
+        if (!sp.getAttribute('style') && sp.attributes.length === 0) {
+          const parent = sp.parentNode;
+          while (sp.firstChild) parent.insertBefore(sp.firstChild, sp);
+          parent.removeChild(sp);
+        }
+      });
+    });
+  }
+
+  document.querySelectorAll('.note-editable').forEach(cleanSummernoteBlockStyles);
+
+  $(document).on('summernote.change', '.summernote-editor, #summernote-editor', function() {
+    const editable = $(this).next('.note-editor').find('.note-editable')[0];
+    if (editable) cleanSummernoteBlockStyles(editable);
+  });
+
+  document.querySelectorAll('form').forEach(function(form) {
+    form.addEventListener('submit', function() {
+      $(form).find('.summernote-editor, #summernote-editor').each(function() {
+        const $ta = $(this);
+        if (typeof $ta.summernote === 'function' && $ta.next('.note-editor').length) {
+          const editable = $ta.next('.note-editor').find('.note-editable')[0];
+          if (editable) cleanSummernoteBlockStyles(editable);
+          $ta.val($ta.summernote('code'));
+        }
+      });
+    });
+  });
+});
+</script>
 </body>
 </html>

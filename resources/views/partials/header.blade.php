@@ -10,9 +10,43 @@
     </a>
     
     {{-- Navigation links matching screenshot --}}
+    @php
+      $navList = $site['nav_items'] ?? [];
+      $hasProjectsLink = false;
+      foreach ($navList as $ni) {
+        if (str_contains(strtolower($ni['url'] ?? ''), '/projects') || strtoupper(trim($ni['label'] ?? '')) === 'PROJECTS') {
+          $hasProjectsLink = true;
+          break;
+        }
+      }
+      if (!$hasProjectsLink && !empty($navList)) {
+        $navList[] = ['label' => 'PROJECTS', 'url' => '/projects'];
+      }
+    @endphp
     <nav class="hidden lg:flex items-center gap-6 text-[12px] font-semibold tracking-wider text-[#10221C] uppercase whitespace-nowrap">
-      @foreach(($site['nav_items'] ?? []) as $item)
-      <a href="{{ $item['url'] ?? '#' }}" class="hover:text-[#B9975B] transition-colors {{ request()->is(trim($item['url'] ?? '', '/')) ? 'text-[#0E3B2C] font-bold' : '' }}">
+      @foreach($navList as $item)
+      @php
+        $lbl = strtoupper(trim($item['label'] ?? ''));
+        $rawUrl = trim($item['url'] ?? '#');
+        $resolvedUrl = match ($lbl) {
+          'HOME' => '/',
+          'VILLAS' => '/villas-for-sale',
+          'BUY' => '/villas-for-sale?status=ready',
+          'SELL' => '/enquiry',
+          'PROJECTS', 'COMPANIES' => '/projects',
+          'COMMUNITIES' => '/communities',
+          'COMPARE' => '/ai-villa-assessment',
+          'INSIGHTS' => '/blog',
+          'MAINTENANCE', 'ABOUT US' => '/about',
+          default => ($rawUrl && $rawUrl !== '#' ? $rawUrl : '/'),
+        };
+        if ($rawUrl && $rawUrl !== '#' && !in_array($rawUrl, ['/villas-for-sale', '#'], true) && !in_array($lbl, ['BUY', 'SELL', 'COMPARE', 'INSIGHTS'], true)) {
+          $resolvedUrl = $rawUrl;
+        }
+        $checkPath = trim(parse_url($resolvedUrl, PHP_URL_PATH) ?: '', '/');
+        $isActiveNav = $checkPath === '' ? request()->is('/') : request()->is($checkPath);
+      @endphp
+      <a href="{{ $resolvedUrl }}" class="hover:text-[#B9975B] transition-colors {{ $isActiveNav ? 'text-[#0E3B2C] font-bold' : '' }}">
         {{ $item['label'] ?? '' }}
       </a>
       @endforeach

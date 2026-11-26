@@ -48,12 +48,25 @@
   </div>
 </section>
 @elseif(($section->key ?? '') === 'assessment_hero' || request()->is('ai-villa-assessment*'))
-{{-- AI Villa Assessment Hero Section matching exact reference --}}
+{{-- AI Villa Assessment Hero Section matching exact reference & connected to CMS --}}
+@php
+  $assessImg = (!empty($c['image']) && $c['image'] !== 'images/palm-jumeirah.jpg')
+    ? $c['image']
+    : 'images/palm-jumeirah-ai-hero.jpg';
+  $assessHeading = array_key_exists('heading_html', $c)
+    ? (str_contains($c['heading_html'], 'class="script"') ? 'Find the Right Villa<br>with AI Insights' : $c['heading_html'])
+    : 'Find the Right Villa<br>with AI Insights';
+  $assessSubtext = array_key_exists('subtext', $c)
+    ? $c['subtext']
+    : 'Answer a few questions and get a personalised recommendation based on your goals, budget and market data.';
+  $assessBreadcrumb = array_key_exists('breadcrumb', $c) ? $c['breadcrumb'] : 'HOME > AI VILLA ASSESSMENT';
+  $assessCrumbParts = $assessBreadcrumb !== '' ? array_values(array_filter(array_map('trim', explode('>', $assessBreadcrumb)))) : [];
+@endphp
 <section class="relative min-h-[460px] sm:min-h-[500px] md:min-h-[540px] flex items-center overflow-hidden font-inter">
   {{-- Background Palm Jumeirah Image --}}
   <img 
-    src="{{ asset('images/palm-jumeirah-ai-hero.jpg') }}" 
-    alt="Palm Jumeirah Aerial View" 
+    src="{{ asset($assessImg) }}" 
+    alt="{{ $c['image_alt'] ?? 'Palm Jumeirah Aerial View' }}" 
     class="absolute inset-0 w-full h-full object-cover object-center"
   >
   
@@ -67,21 +80,118 @@
       {{-- Breadcrumb: • HOME > AI VILLA ASSESSMENT --}}
       <div class="flex items-center gap-2 text-xs sm:text-[13px] tracking-wider uppercase font-medium text-neutral-500 mb-5 font-inter">
         <span class="w-1.5 h-1.5 rounded-full bg-neutral-400"></span>
-        <a href="/" class="hover:text-black transition-colors">HOME</a>
-        <span class="text-neutral-400">&gt;</span>
-        <span class="text-neutral-700 font-semibold">AI VILLA ASSESSMENT</span>
+        @foreach($assessCrumbParts as $idx => $part)
+          @if($idx > 0)<span class="text-neutral-400">&gt;</span>@endif
+          @if($idx === 0)
+            <a href="/" class="hover:text-black transition-colors">{{ $part }}</a>
+          @elseif($loop->last)
+            <span class="text-neutral-700 font-semibold">{{ $part }}</span>
+          @else
+            <span>{{ $part }}</span>
+          @endif
+        @endforeach
       </div>
 
       {{-- Main Heading: Find the Right Villa with AI Insights (Abhaya Libre Medium/SemiBold) --}}
       <h1 class="font-heading font-medium text-4xl sm:text-5xl md:text-[62px] lg:text-[66px] leading-[1.08] text-[#0E3B2C] tracking-tight mb-5">
-        Find the Right Villa<br>with AI Insights
+        {!! $assessHeading !!}
       </h1>
 
       {{-- Subtext: Answer a few questions... (Inter regular) --}}
       <p class="text-xs sm:text-sm md:text-[15px] text-neutral-600 font-inter leading-relaxed max-w-lg">
-        Answer a few questions and get a personalised recommendation based on your goals, budget and market data.
+        {{ $assessSubtext }}
       </p>
 
+    </div>
+  </div>
+</section>
+@elseif(($section->key ?? '') === 'enquiry_hero' || request()->is('enquiry*'))
+@php
+  $enquiryImg = (!empty($c['image']) && $c['image'] !== 'images/villa-pool-dusk.jpg')
+    ? $c['image']
+    : 'images/enquiry-hero-villa.jpg';
+  $enquiryHeading = array_key_exists('heading_html', $c)
+    ? (str_contains($c['heading_html'], 'class="script"') ? 'Tell Us What You<br>Are Looking For' : $c['heading_html'])
+    : 'Tell Us What You<br>Are Looking For';
+  $enquirySubtext = array_key_exists('subtext', $c)
+    ? (str_contains($c['subtext'], 'personalised shortlist') ? 'Five short steps — your purpose, preferences, budget and timeline — then review everything and send it straight to our advisory team on WhatsApp.' : $c['subtext'])
+    : 'Five short steps — your purpose, preferences, budget and timeline — then review everything and send it straight to our advisory team on WhatsApp.';
+  $enquiryBreadcrumb = array_key_exists('breadcrumb', $c) ? $c['breadcrumb'] : 'HOME > VILLA ENQUIRY QUESTIONNAIRE';
+  $enquiryCrumbParts = $enquiryBreadcrumb !== '' ? array_values(array_filter(array_map('trim', explode('>', $enquiryBreadcrumb)))) : [];
+@endphp
+<section class="relative min-h-[460px] sm:min-h-[500px] md:min-h-[540px] flex items-center overflow-hidden">
+  <img
+    src="{{ asset($enquiryImg) }}"
+    alt="{{ $c['image_alt'] ?? 'Luxury Dubai Villa' }}"
+    class="absolute inset-0 w-full h-full object-cover object-center"
+  >
+  <div class="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/10 md:from-white md:via-white/80 md:to-transparent"></div>
+  <div class="relative z-10 max-w-[1280px] mx-auto px-6 sm:px-8 w-full py-16 sm:py-20">
+    <div class="max-w-2xl">
+      <div class="flex items-center gap-2 text-xs sm:text-[13px] tracking-[0.16em] uppercase font-medium text-neutral-600 mb-5 font-source">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#10221C]"></span>
+        @foreach($enquiryCrumbParts as $idx => $part)
+          @if($idx > 0)<span class="text-neutral-400">&rsaquo;</span>@endif
+          @if($idx === 0)
+            <a href="/" class="hover:text-black transition-colors">{{ $part }}</a>
+          @elseif($loop->last)
+            <span class="text-neutral-700 font-semibold">{{ $part }}</span>
+          @else
+            <span>{{ $part }}</span>
+          @endif
+        @endforeach
+      </div>
+      <h1 class="font-heading font-medium text-4xl sm:text-5xl md:text-[62px] lg:text-[66px] leading-[1.05] text-[#0E3B2C] tracking-tight mb-5" style="font-family: 'Abhaya Libre', Georgia, serif;">
+        {!! $enquiryHeading !!}
+      </h1>
+      <p class="text-xs sm:text-sm md:text-[15px] text-neutral-700 font-source leading-relaxed max-w-lg" style="font-family: 'Source Sans 3', sans-serif;">
+        {{ $enquirySubtext }}
+      </p>
+    </div>
+  </div>
+</section>
+@elseif(($section->key ?? '') === 'blog_hero' || request()->is('blog*'))
+@php
+  $blogImg = (!empty($c['image']) && $c['image'] !== 'images/dubai-skyline.jpg')
+    ? $c['image']
+    : 'images/blog-hero-villa.jpg';
+  $blogHeading = array_key_exists('heading_html', $c)
+    ? (str_contains($c['heading_html'], 'class="script"') ? 'Dubai Property Blog: Buying<br>Guides &amp; Off-Plan Market Insights' : $c['heading_html'])
+    : 'Dubai Property Blog: Buying<br>Guides &amp; Off-Plan Market Insights';
+  $blogSubtext = array_key_exists('subtext', $c)
+    ? $c['subtext']
+    : "Discover expert guides, off-plan property advice, and investment insights to help you navigate Dubai's real estate market with confidence.";
+  $blogBreadcrumb = array_key_exists('breadcrumb', $c) ? $c['breadcrumb'] : 'HOME > BLOG';
+  $blogCrumbParts = $blogBreadcrumb !== '' ? array_values(array_filter(array_map('trim', explode('>', $blogBreadcrumb)))) : [];
+@endphp
+<section class="relative min-h-[460px] sm:min-h-[500px] md:min-h-[540px] flex items-center overflow-hidden">
+  <img
+    src="{{ asset($blogImg) }}"
+    alt="{{ $c['image_alt'] ?? 'Luxury Dubai Villa' }}"
+    class="absolute inset-0 w-full h-full object-cover object-center"
+  >
+  <div class="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/10 md:from-white md:via-white/80 md:to-transparent"></div>
+  <div class="relative z-10 max-w-[1280px] mx-auto px-6 sm:px-8 w-full py-16 sm:py-20">
+    <div class="max-w-3xl">
+      <div class="flex items-center gap-2 text-xs sm:text-[13px] tracking-[0.16em] uppercase font-medium text-neutral-600 mb-5 font-source" style="font-family: 'Source Sans 3', sans-serif;">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#10221C]"></span>
+        @foreach($blogCrumbParts as $idx => $part)
+          @if($idx > 0)<span class="text-neutral-400">&rsaquo;</span>@endif
+          @if($idx === 0)
+            <a href="/" class="hover:text-black transition-colors">{{ $part }}</a>
+          @elseif($loop->last)
+            <span class="text-neutral-700 font-semibold">{{ $part }}</span>
+          @else
+            <span>{{ $part }}</span>
+          @endif
+        @endforeach
+      </div>
+      <h1 class="font-heading font-medium text-4xl sm:text-5xl md:text-[58px] lg:text-[62px] leading-[1.08] text-[#0E3B2C] tracking-tight mb-5" style="font-family: 'Abhaya Libre', Georgia, serif;">
+        {!! $blogHeading !!}
+      </h1>
+      <p class="text-xs sm:text-sm md:text-[15px] text-neutral-700 font-source leading-relaxed max-w-xl" style="font-family: 'Source Sans 3', sans-serif;">
+        {{ $blogSubtext }}
+      </p>
     </div>
   </div>
 </section>

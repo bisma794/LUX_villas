@@ -45,16 +45,16 @@
     'location' => 'Dubai, UAE',
   ];
 
-  $breadcrumbs = $cmsCommunity['breadcrumbs'] ?? 'HOME > COMMUNITIES';
-  $heading = !empty($cmsCommunity['hero_heading']) ? $cmsCommunity['hero_heading'] : $baseInfo['name'];
-  $description = !empty($cmsCommunity['hero_subtext']) ? $cmsCommunity['hero_subtext'] : $baseInfo['subtext'];
+  $breadcrumbs = array_key_exists('breadcrumbs', $cmsCommunity) ? $cmsCommunity['breadcrumbs'] : 'HOME > COMMUNITIES';
+  $heading = array_key_exists('hero_heading', $cmsCommunity) ? $cmsCommunity['hero_heading'] : $baseInfo['name'];
+  $description = array_key_exists('hero_subtext', $cmsCommunity) ? $cmsCommunity['hero_subtext'] : $baseInfo['subtext'];
   $showForm = isset($cmsCommunity['show_form']) ? (bool)$cmsCommunity['show_form'] : true;
-  $formTitle = !empty($cmsCommunity['form_title']) ? $cmsCommunity['form_title'] : ('Enquire about ' . $heading);
+  $formTitle = array_key_exists('form_title', $cmsCommunity) ? $cmsCommunity['form_title'] : ('Enquire about ' . $heading);
   $heroImg = !empty($cmsCommunity['hero_img']) ? $cmsCommunity['hero_img'] : $baseInfo['hero_img'];
 
   // Content Section (Community Guide) from CMS
-  $guideHeading = !empty($cmsCommunity['guide_heading']) ? $cmsCommunity['guide_heading'] : ($baseInfo['name'] . ' Community Guide');
-  $guideDescription = !empty($cmsCommunity['guide_description']) ? $cmsCommunity['guide_description'] : $baseInfo['subtext'];
+  $guideHeading = array_key_exists('guide_heading', $cmsCommunity) ? $cmsCommunity['guide_heading'] : ($baseInfo['name'] . ' Community Guide');
+  $guideDescription = array_key_exists('guide_description', $cmsCommunity) ? $cmsCommunity['guide_description'] : $baseInfo['subtext'];
   $mediaType = $cmsCommunity['media_type'] ?? 'video'; // 'video', 'image', or 'hidden'
   $mediaImage = !empty($cmsCommunity['media_image']) ? $cmsCommunity['media_image'] : 'images/family-park.jpg';
   $videoUrl = $cmsCommunity['video_url'] ?? '';
@@ -381,12 +381,14 @@
 
 {{-- Full Content Section (Summernote Rich Content matching reference typography) --}}
 @php
-  $fullContentHtml = $cmsCommunity['full_content'] ?? '';
+  $fullContentHtml = preg_replace('/(<(?:p|h[1-6])\b[^>]*?)\sstyle="[^"]*"/i', '$1', $cmsCommunity['full_content'] ?? '');
 @endphp
 @if(!empty($fullContentHtml))
-<section class="max-w-[1280px] mx-auto px-6 py-16 font-inter border-t border-neutral-100">
-  <div class="max-w-4xl prose prose-neutral prose-headings:font-heading prose-headings:font-medium prose-headings:text-[#C5A47E] prose-h2:text-3xl sm:prose-h2:text-[34px] prose-h3:text-2xl sm:prose-h3:text-[28px] prose-h3:text-[#C5A47E] prose-p:text-sm sm:prose-p:text-base prose-p:text-neutral-600 prose-p:leading-relaxed prose-img:rounded-2xl prose-img:shadow-md">
-    {!! $fullContentHtml !!}
+<section style="background-color: #F8F8F8;" class="py-20 md:py-24 font-inter border-t border-neutral-100">
+  <div class="max-w-[1280px] mx-auto px-6">
+    <div class="lux-rich-content lux-rich-content-inner max-w-none leading-relaxed" style="color: #000000;">
+      {!! $fullContentHtml !!}
+    </div>
   </div>
 </section>
 @endif

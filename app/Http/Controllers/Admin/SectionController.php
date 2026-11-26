@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class SectionController extends Controller
 {
     /** Scalar content keys edited with friendly fields; the rest via the JSON editor. */
-    public const SCALARS = ['eyebrow', 'heading_html', 'subtext', 'image', 'image_alt', 'image_side', 'button_text', 'button_link', 'button2_text', 'button2_link', 'button2_style', 'breadcrumb', 'price', 'variant', 'count_text', 'header_button_text', 'header_button_link', 'note_title', 'note', 'quiz_rich_content', 'rich_content', 'full_content'];
+    public const SCALARS = ['eyebrow', 'heading_html', 'subtext', 'image', 'image_alt', 'image_side', 'button_text', 'button_link', 'button2_text', 'button2_link', 'button2_style', 'breadcrumb', 'price', 'variant', 'count_text', 'header_button_text', 'header_button_link', 'note_title', 'note', 'quiz_rich_content', 'rich_content', 'full_content', 'beds', 'baths', 'sqft', 'overview_heading', 'overview_text', 'gallery_main', 'gallery_top_right', 'gallery_bottom_right', 'amenities_heading', 'location_heading', 'location_text', 'latitude', 'longitude', 'similar_heading', 'search_placeholder', 'link_text', 'location_placeholder', 'search_types', 'search_budgets', 'search_handovers', 'tab_1', 'tab_2', 'tab_3', 'tab_4', 'tab_5', 'step1_title', 'step1_subtitle', 'step2_title', 'step2_subtitle', 'step3_title', 'step3_subtitle', 'step4_title', 'step4_subtitle', 'step5_title', 'step5_subtitle', 'whatsapp_number', 'submit_button_text'];
 
     public function index(Request $request)
     {
@@ -48,6 +48,9 @@ class SectionController extends Controller
     {
         $section->update($this->validated($request, $section->id));
         $section->update(['content' => $this->contentFromRequest($request, $section->content ?? [])]);
+        if ($request->headers->get('referer') && str_contains($request->headers->get('referer'), '/admin/pages/')) {
+            return back()->with('ok', 'Section "' . $section->name . '" updated — changes are now live on the frontend.');
+        }
         return redirect()->route('admin.sections.edit', $section)->with('ok', 'Section saved — every page using it now shows the new content.');
     }
 
@@ -83,17 +86,36 @@ class SectionController extends Controller
     private function contentFromRequest(Request $request, array $existing): array
     {
         $content = $existing;
-        foreach (self::SCALARS as $key) {
-            $value = $request->input('content_' . $key);
-            if ($value !== null && $value !== '') {
-                $content[$key] = $value;
-            } elseif ($value === '' && array_key_exists($key, $content)) {
-                unset($content[$key]);
+        $advanced = $request->input('content_json', '');
+        if (trim($advanced) !== '') {
+            $decoded = json_decode($advanced, true);
+            if (! is_array($decoded)) {
+                abort(422, 'Advanced content is not valid JSON.');
             }
+            foreach ($decoded as $k => $v) {
+                $content[$k] = $v;
+            }
+        }
+        foreach (self::SCALARS as $key) {
+            if (! $request->exists('content_' . $key)) {
+                continue;
+            }
+            $value = $request->input('content_' . $key);
+            if ($key === 'heading_html' && is_string($value) && trim($value) !== '') {
+                // Preserve user's exact line breaks from CMS textarea without exposing HTML in CMS
+                $clean = trim(strip_tags(preg_replace('/<br\s*\/?>/i', "\n", $value)));
+                $value = str_replace(["\r\n", "\r", "\n"], '<br>', $clean);
+            } elseif (in_array($key, ['full_content', 'quiz_rich_content'], true) && is_string($value)) {
+                $value = preg_replace('/(<(?:p|h[1-6])\b[^>]*?)\sstyle="[^"]*"/i', '$1', $value);
+            }
+            $content[$key] = ($value !== null && $value !== '') ? $value : '';
         }
         if ($request->hasFile('image_upload')) {
             $request->validate(['image_upload' => ['image', 'max:5120']]);
-            $content['image'] = 'storage/' . $request->file('image_upload')->store('uploads', 'public');
+            $file = $request->file('image_upload');
+            $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
+            $file->move(public_path('images'), $filename);
+            $content['image'] = 'images/' . $filename;
         }
 
         // Handle structured card items array if submitted directly from form
@@ -129,6 +151,44 @@ class SectionController extends Controller
             $content['assigned_offplan_projects'] = (array) $request->input('selected_offplan_projects');
         }
 
+        // Handle Buy Listing Gallery file uploads (main, top_right, bottom_right)
+        foreach (['gallery_main', 'gallery_top_right', 'gallery_bottom_right'] as $gField) {
+            if ($request->hasFile($gField . '_file')) {
+                $file = $request->file($gField . '_file');
+                $filename = time() . '_' . $gField . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $file->getClientOriginalName());
+                $file->move(public_path('images'), $filename);
+                $content[$gField] = 'images/' . $filename;
+            }
+        }
+        if (isset($content['gallery_main']) || isset($content['gallery_top_right']) || isset($content['gallery_bottom_right'])) {
+            $content['gallery'] = [
+                $content['gallery_main'] ?? ($content['gallery'][0] ?? 'images/dubai-marina.jpg'),
+                $content['gallery_top_right'] ?? ($content['gallery'][1] ?? 'images/house-white.jpg'),
+                $content['gallery_bottom_right'] ?? ($content['gallery'][2] ?? 'images/family-park.jpg'),
+            ];
+        }
+
+        // Handle dynamic USPs list for Buy Listing Details
+        if ($request->has('usps') && is_array($request->input('usps'))) {
+            $usps = array_values(array_filter(array_map('trim', $request->input('usps')), fn ($v) => $v !== ''));
+            $content['usps'] = $usps;
+            $content['heading_html'] = implode(' | ', $usps);
+        }
+
+        // Handle selected amenities from Amenities dropdown / checkbox grid
+        if ($request->has('amenities_form_submitted')) {
+            $content['assigned_amenities'] = (array) $request->input('selected_amenities', []);
+        } elseif ($request->has('selected_amenities')) {
+            $content['assigned_amenities'] = (array) $request->input('selected_amenities');
+        }
+
+        // Handle selected similar projects from Column S drag and drop
+        if ($request->has('similar_projects_submitted')) {
+            $content['assigned_similar_projects'] = (array) $request->input('selected_similar_projects', []);
+        } elseif ($request->has('selected_similar_projects')) {
+            $content['assigned_similar_projects'] = (array) $request->input('selected_similar_projects');
+        }
+
         // Handle FAQ items (q, a)
         if ($request->has('faqs') && is_array($request->input('faqs'))) {
             $faqs = [];
@@ -141,16 +201,6 @@ class SectionController extends Controller
                 }
             }
             $content['faqs'] = $faqs;
-        }
-        $advanced = $request->input('content_json', '');
-        if (trim($advanced) !== '') {
-            $decoded = json_decode($advanced, true);
-            if (! is_array($decoded)) {
-                abort(422, 'Advanced content is not valid JSON.');
-            }
-            foreach ($decoded as $k => $v) {
-                $content[$k] = $v;
-            }
         }
         return $content;
     }

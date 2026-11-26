@@ -42,6 +42,16 @@
     {{-- Right Content --}}
     <div class="flex flex-col items-start font-inter">
       @if(!empty($c['quiz_rich_content']))
+        <style>
+          .rich-quiz-content h1 { font-family: 'Abhaya Libre', Georgia, serif; font-size: 46px; font-weight: 500; line-height: 1.15; color: #22302A; margin-bottom: 14px; }
+          .rich-quiz-content h2 { font-family: 'Abhaya Libre', Georgia, serif; font-size: 40px; font-weight: 500; line-height: 1.18; color: #22302A; margin-bottom: 12px; }
+          .rich-quiz-content h3 { font-family: 'Abhaya Libre', Georgia, serif; font-size: 28px; font-weight: 600; line-height: 1.25; color: #22302A; margin-bottom: 10px; }
+          .rich-quiz-content h4 { font-size: 18px; font-weight: 700; color: #10221C; margin-bottom: 8px; }
+          .rich-quiz-content p { font-size: 15px; color: #64736B; line-height: 1.65; margin-bottom: 10px; }
+          .rich-quiz-content ul { list-style-type: disc; padding-left: 20px; margin: 12px 0; color: #4A5550; }
+          .rich-quiz-content ol { list-style-type: decimal; padding-left: 20px; margin: 12px 0; color: #4A5550; }
+          .rich-quiz-content li { margin-bottom: 6px; font-size: 14px; line-height: 1.6; }
+        </style>
         <div class="rich-quiz-content text-slate-800 leading-relaxed font-inter">
           {!! $c['quiz_rich_content'] !!}
         </div>

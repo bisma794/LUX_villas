@@ -1,5 +1,5 @@
 @php
-  $isHomePage = request()->is('/') || request()->routeIs('home') || (($section->key ?? '') === 'home_communities');
+  $isHomePage = ($forceHomeCarousel ?? false) || request()->is('/') || request()->routeIs('home') || (($section->key ?? '') === 'home_communities');
 @endphp
 
 @if($isHomePage)
@@ -180,12 +180,15 @@
   {{-- ========================================== --}}
   {{-- COMMUNITIES PAGE: FULL DIRECTORY GRID     --}}
   {{-- ========================================== --}}
-  <section class="max-w-[1280px] mx-auto px-6 pt-4 pb-20 font-inter">
+  <section id="communities-grid" class="max-w-[1280px] mx-auto px-6 pt-4 pb-20 font-inter">
     @php
       $store = \App\Http\Controllers\Admin\EntityController::getCommunityStore();
+      // Newly created communities are prepended to the top of the store
+      $orderedStore = $store;
+      $viewLabel = !empty($c['link_text']) ? $c['link_text'] : 'view community';
       
       $cards = [];
-      foreach ($store as $slug => $comm) {
+      foreach ($orderedStore as $slug => $comm) {
         $cards[] = [
           'title' => $comm['name'],
           'desc' => !empty($comm['hero_subtext']) ? $comm['hero_subtext'] : (!empty($comm['guide_description']) ? $comm['guide_description'] : 'Master-planned luxury community with landscaped parks and prime residences in Dubai.'),
@@ -198,7 +201,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
       @foreach($cards as $card)
-        <div class="group bg-white rounded-[16px] border border-[#E5E7EB] overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+        <div class="community-grid-card group bg-white rounded-[16px] border border-[#E5E7EB] overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between" data-name="{{ strtolower($card['title']) }}">
           
           <div>
             <a href="{{ $card['link'] }}" class="block relative w-full h-[210px] overflow-hidden bg-neutral-100">
@@ -223,7 +226,7 @@
 
           <div class="px-5 pb-5 pt-2 flex items-center justify-between border-t border-transparent text-xs font-inter">
             <a href="{{ $card['link'] }}" class="font-medium text-[#10221C] hover:text-[#C5A47E] transition-colors flex items-center gap-1">
-              <span>view community</span>
+              <span>{{ $viewLabel }}</span>
               <span class="text-neutral-500 group-hover:translate-x-0.5 transition-transform">&gt;</span>
             </a>
             <span class="text-neutral-500 font-medium">

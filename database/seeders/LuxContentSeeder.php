@@ -516,10 +516,10 @@ class LuxContentSeeder extends Seeder
     private function seedEnquiry(): void
     {
         $this->section('enquiry_hero', 'Enquiry — Hero', 'hero', [
-            'image' => 'images/villa-pool-dusk.jpg', 'image_alt' => 'Modern villa at dusk',
+            'image' => 'images/enquiry-hero-villa.jpg', 'image_alt' => 'Luxury Dubai Villa',
             'breadcrumb' => 'HOME > VILLA ENQUIRY QUESTIONNAIRE',
-            'heading_html' => 'Tell Us What You Are <span class="script">Looking For</span>',
-            'subtext' => 'Five short steps — your purpose, preferences, budget and timeline — then receive a personalised shortlist and a callback from an advisor.',
+            'heading_html' => 'Tell Us What You<br>Are Looking For',
+            'subtext' => 'Five short steps — your purpose, preferences, budget and timeline — then review everything and send it straight to our advisory team on WhatsApp.',
         ]);
         $this->section('enquiry_stepper', 'Enquiry — Questionnaire stepper', 'stepper_quiz', [
             'labels' => ['Purpose & Goals', 'Preferences', 'Budget & Financing', 'Timeline & Requirements', 'Review & Submit'],
@@ -571,20 +571,32 @@ class LuxContentSeeder extends Seeder
     private function seedBlog(): void
     {
         $this->section('blog_hero', 'Blog — Hero', 'hero', [
-            'image' => 'images/dubai-skyline.jpg', 'image_alt' => 'Dubai skyline',
-            'breadcrumb' => 'Home > Blog',
-            'heading_html' => 'Dubai Property Blog: Buying Guides &amp; <span class="script">Off-Plan Market Insights</span>',
+            'image' => 'images/blog-hero-villa.jpg', 'image_alt' => 'Luxury Dubai Villa',
+            'breadcrumb' => 'HOME > BLOG',
+            'heading_html' => 'Dubai Property Blog: Buying<br>Guides &amp; Off-Plan Market Insights',
             'subtext' => 'Discover expert guides, off-plan property advice, and investment insights to help you navigate Dubai\'s real estate market with confidence.',
         ]);
         $this->section('blog_articles', 'Blog — Article grid', 'article_grid', [
-            'link_text' => 'Read Now →',
+            'link_text' => 'Read More',
             'items' => [
-                ['image' => 'images/dubai-skyline.jpg', 'title' => 'Dubai Villa Market 2025: Key Trends and Opportunities', 'badge' => 'Dubai Villa Market', 'meta' => '16 Apr 2025', 'link' => '#'],
-                ['image' => 'images/villa-pool-dusk.jpg', 'title' => 'Planning to Buy in Dubai? Essential Costs to Know', 'badge' => 'Buying Guides', 'meta' => '16 Apr 2025', 'link' => '#'],
-                ['image' => 'images/dubai-marina.jpg', 'title' => 'Exclusive Off-Plan Property Launches in Dubai 2025', 'badge' => 'Off-Plan Property', 'meta' => '2 Apr 2025', 'link' => '#'],
-                ['image' => 'images/house-exterior.jpg', 'title' => 'Dubai Villa Market 2025: Key Trends and Opportunities', 'badge' => 'Dubai Villa Market', 'meta' => '16 Apr 2025', 'link' => '#'],
-                ['image' => 'images/interior-lux.jpg', 'title' => 'Planning to Buy in Dubai? Essential Costs to Know', 'badge' => 'Buying Guides', 'meta' => '16 Apr 2025', 'link' => '#'],
-                ['image' => 'images/villa-night.jpg', 'title' => 'Exclusive Off-Plan Property Launches in Dubai 2025', 'badge' => 'Off-Plan Property', 'meta' => '2 Apr 2025', 'link' => '#'],
+                ['image' => 'images/dubai-skyline.jpg', 'title' => 'Dubai Villa Market 2025: Key Trends and Opportunities', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/dubai-marina.jpg', 'title' => 'Planning to Buy in Dubai? Essential Costs to Know', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/palm-jumeirah-ai-hero.jpg', 'title' => 'Exclusive Off-Plan Property Launches in Dubai 2025', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/dubai-towers.jpg', 'title' => 'ROI Analysis: Dubai Townhouses vs Luxury Villas', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/blog-hero-villa.jpg', 'title' => 'Top Family Villa Communities in Dubai for 2026', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/enquiry-hero-villa.jpg', 'title' => 'Golden Visa Through Dubai Property: Full Guide', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/communities-hero-villa.jpg', 'title' => 'Dubai Hills Estate vs Arabian Ranches 3 Comparison', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/clean-valley-1.jpg', 'title' => 'Why The Valley by Emaar Attracts Global Buyers', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/clean-valley-2.jpg', 'title' => 'Off-Plan Payment Plans Explained for Investors', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/clean-valley-4.jpg', 'title' => 'Waterfront Living: Palm Jumeirah & Dubai Islands', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/clean-valley-5.jpg', 'title' => 'DLD Fees, Escrow & Legal Checklist When Buying', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/community-dubai-hills.jpg', 'title' => 'Golf Course Villas: Long-Term Capital Growth', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/community-dubailand.jpg', 'title' => 'Ready Villas vs Off-Plan: Which Suits Your Goals?', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/community-jvc.jpg', 'title' => 'High-Yield Residential Hubs Across New Dubai', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/listing-modern-villa.jpg', 'title' => 'Modern Architectural Trends in Dubai Luxury Homes', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/listing-pool-villa.jpg', 'title' => 'Private Pool Villas: Rental Demand & Resale Value', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/house-exterior.jpg', 'title' => 'Mortgage Financing Options for Non-Residents in UAE', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
+                ['image' => 'images/house-white.jpg', 'title' => 'How to Choose the Right Plot & Orientation in Dubai', 'badge' => 'Buying Advice & Investment', 'meta' => '23rd March 2026', 'link' => '#'],
             ],
             'communities_heading_html' => 'Popular <span class="script">Communities</span>',
             'communities' => [
@@ -714,9 +726,9 @@ class LuxContentSeeder extends Seeder
             ['title' => 'Lux Villa for selling', 'slug' => 'villas-for-sale', 'path' => 'villas-for-sale', 'seo_title' => 'Villas for Sale in Dubai — Lux Villa Dubai', 'sections' => ['villas_rows', 'global_seo', 'faq_default', 'global_register']],
             ['title' => 'Buy Listing Details', 'slug' => 'listing-the-valley-prime-location', 'path' => 'listing/the-valley-prime-location', 'seo_title' => 'The Valley | Prime Location | District Deal — Lux Villa Dubai', 'sections' => ['listing_detail', 'global_seo', 'faq_default', 'global_register']],
             ['title' => 'Lux Project Details page', 'slug' => 'project-golf-vale-emaar-south', 'path' => 'projects/golf-vale-emaar-south', 'seo_title' => 'Golf Vale Emaar South — Lux Villa Dubai', 'sections' => ['project_header', 'project_detail', 'global_seo', 'faq_default', 'global_register']],
-            ['title' => 'AI Villa Assessment', 'slug' => 'ai-villa-assessment', 'path' => 'ai-villa-assessment', 'seo_title' => 'AI Villa Assessment — Lux Villa Dubai', 'sections' => ['assessment_hero', 'assessment_stepper', 'global_seo', 'faq_default', 'global_register']],
-            ['title' => 'Enquiry', 'slug' => 'enquiry', 'path' => 'enquiry', 'seo_title' => 'Villa Enquiry — Lux Villa Dubai', 'sections' => ['enquiry_hero', 'enquiry_stepper', 'global_seo', 'faq_default', 'global_register']],
-            ['title' => 'Blog', 'slug' => 'blog', 'path' => 'blog', 'seo_title' => 'Dubai Property Blog — Lux Villa Dubai', 'sections' => ['blog_hero', 'blog_articles', 'global_seo', 'faq_default', 'global_register']],
+            ['title' => 'AI Villa Assessment', 'slug' => 'ai-villa-assessment', 'path' => 'ai-villa-assessment', 'seo_title' => 'AI Villa Assessment — Lux Villa Dubai', 'sections' => ['assessment_hero', 'assessment_stepper', 'faq_default', 'global_register']],
+            ['title' => 'Enquiry', 'slug' => 'enquiry', 'path' => 'enquiry', 'seo_title' => 'Villa Enquiry — Lux Villa Dubai', 'sections' => ['enquiry_hero', 'enquiry_stepper', 'faq_default', 'global_register']],
+            ['title' => 'Blog', 'slug' => 'blog', 'path' => 'blog', 'seo_title' => 'Dubai Property Blog — Lux Villa Dubai', 'sections' => ['blog_hero', 'blog_articles', 'home_communities', 'faq_default', 'global_register']],
             ['title' => 'Communities Main page', 'slug' => 'communities', 'path' => 'communities', 'seo_title' => 'Communities in Dubai — Lux Villa Dubai', 'sections' => ['communities_intro', 'communities_map', 'communities_grid', 'global_seo', 'faq_default', 'global_register']],
             ['title' => 'Communities inner page', 'slug' => 'communities-the-valley', 'path' => 'communities/the-valley', 'seo_title' => 'The Valley Dubai — Lux Villa Dubai', 'sections' => ['valley_hero', 'valley_guide', 'global_seo', 'faq_default', 'global_register']],
             ['title' => 'Project', 'slug' => 'projects', 'path' => 'projects', 'seo_title' => 'Projects — Buy Your Villa With Confidence — Lux Villa Dubai', 'sections' => ['projects_intro', 'projects_listings', 'projects_offplan_text', 'projects_promo', 'global_seo', 'faq_default', 'global_register']],

@@ -1,3 +1,11 @@
+@php
+  $mapHeading = array_key_exists('heading_html', $c) ? $c['heading_html'] : 'Map View';
+  $mapSubtext = array_key_exists('subtext', $c) ? $c['subtext'] : (!empty($c['card_text']) ? $c['card_text'] : 'Fairways Vistas, Dubai Hills Estate, Dubai, UAE');
+  $mapPlaceholder = array_key_exists('search_placeholder', $c) ? $c['search_placeholder'] : 'Search Community';
+  $latVal = trim((string) (array_key_exists('latitude', $c) ? $c['latitude'] : '25.1072'));
+  $lngVal = trim((string) (array_key_exists('longitude', $c) ? $c['longitude'] : '55.2449'));
+  $googleMapEmbedUrl = ($latVal !== '' && $lngVal !== '') ? "https://maps.google.com/maps?q={$latVal},{$lngVal}&z=12&output=embed" : '';
+@endphp
 <section class="max-w-[1280px] mx-auto px-6 py-10 font-inter">
   
   {{-- Header Row: Left Title & Subtitle, Right Search Input --}}
@@ -6,10 +14,10 @@
     {{-- Left: Map View Heading + Subtitle --}}
     <div>
       <h2 class="font-heading font-medium text-3xl sm:text-[34px] text-[#0E3B2C] leading-snug">
-        Map View
+        {!! $mapHeading !!}
       </h2>
       <p class="text-sm sm:text-base text-neutral-400 font-inter mt-1">
-        Fairways Vistas, Dubai Hills Estate, Dubai, UAE
+        {{ $mapSubtext }}
       </p>
     </div>
 
@@ -23,8 +31,10 @@
 
         {{-- Input Field --}}
         <input 
+          id="communities-map-search"
           type="text" 
-          placeholder="Search Community" 
+          placeholder="{{ $mapPlaceholder }}" 
+          oninput="filterCommunitiesGrid(this.value)"
           class="w-full text-xs text-neutral-700 placeholder-neutral-400 bg-transparent focus:outline-none"
         >
 
@@ -37,13 +47,24 @@
 
   </div>
 
-  {{-- Map Container matching Reference Screenshot --}}
-  <div class="relative w-full rounded-[20px] overflow-hidden border border-[#E5E7EB] shadow-xs bg-[#EBF1F6]">
-    <img 
-      src="{{ asset('images/communities-map-view.jpg') }}" 
-      alt="Fairways Vistas Map View" 
-      class="w-full h-auto object-cover min-h-[380px] sm:min-h-[460px] md:min-h-[520px]"
-    >
+  {{-- Map Container dynamically driven by Latitude & Longitude --}}
+  <div class="relative w-full rounded-[20px] overflow-hidden border border-[#E5E7EB] shadow-xs bg-[#EBF1F6] h-[380px] sm:h-[460px] md:h-[520px]">
+    <iframe
+      src="{{ $googleMapEmbedUrl }}"
+      class="w-full h-full border-0"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      allowfullscreen
+    ></iframe>
   </div>
 
 </section>
+<script>
+  function filterCommunitiesGrid(q) {
+    const term = (q || '').trim().toLowerCase();
+    document.querySelectorAll('.community-grid-card').forEach(function(card) {
+      const name = (card.dataset.name || '').toLowerCase();
+      card.style.display = (!term || name.includes(term)) ? '' : 'none';
+    });
+  }
+</script>

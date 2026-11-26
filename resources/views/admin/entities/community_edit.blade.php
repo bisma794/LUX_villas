@@ -7,19 +7,25 @@
   <div class="bg-white rounded-[16px] border border-slate-100 p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
     <div>
       <h1 class="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
-        Update Community
+        {{ !empty($isNew) ? 'Add New Community' : 'Update Community — ' . ($community['name'] ?? '') }}
       </h1>
-      <p class="text-xs text-slate-500 font-medium mt-1">
-        Page URL: <a href="{{ $community['url'] }}" target="_blank" class="text-blue-600 hover:underline">{{ url($community['url']) }}</a>
-      </p>
+      @if(empty($isNew))
+        <p class="text-xs text-slate-500 font-medium mt-1">
+          Page URL: <a href="{{ $community['url'] }}" target="_blank" class="text-blue-600 hover:underline">{{ url($community['url']) }}</a>
+        </p>
+      @else
+        <p class="text-xs text-slate-500 font-medium mt-1">
+          Fill out the 9-tab Community template below so every Community page shares the same design.
+        </p>
+      @endif
     </div>
 
     <div class="flex items-center gap-3">
       {{-- Status Selector --}}
       <div class="relative">
-        <select class="appearance-none bg-white border border-slate-200 rounded-xl px-4 py-2 pr-8 text-xs font-bold text-emerald-600 focus:outline-none focus:border-emerald-500">
-          <option value="DRAFT" {{ $community['status'] === 'DRAFT' ? 'selected' : '' }}>DRAFT</option>
-          <option value="PUBLISHED" {{ $community['status'] === 'PUBLISHED' ? 'selected' : '' }}>PUBLISHED</option>
+        <select onchange="document.getElementById('community-status-hidden').value = this.value" class="appearance-none bg-white border border-slate-200 rounded-xl px-4 py-2 pr-8 text-xs font-bold text-emerald-600 focus:outline-none focus:border-emerald-500 cursor-pointer">
+          <option value="DRAFT" {{ ($community['status'] ?? 'DRAFT') === 'DRAFT' ? 'selected' : '' }}>DRAFT</option>
+          <option value="PUBLISHED" {{ ($community['status'] ?? '') === 'PUBLISHED' ? 'selected' : '' }}>PUBLISHED</option>
         </select>
         <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -67,19 +73,23 @@
     {{-- Right Form Panel Container --}}
     <div class="lg:col-span-9 bg-white rounded-[16px] border border-slate-100 p-6 sm:p-8 shadow-xs">
       
-      <form action="{{ route('admin.communities.update', $community['slug']) }}" method="POST" enctype="multipart/form-data">
+      <form action="{{ !empty($isNew) ? route('admin.communities.store') : route('admin.communities.update', $community['slug']) }}" method="POST" enctype="multipart/form-data">
         @csrf
+        <input type="hidden" name="status" id="community-status-hidden" value="{{ $community['status'] ?? 'DRAFT' }}">
 
         {{-- TAB 1: BASIC DETAIL --}}
         <div data-tab-content="basic" class="tab-pane space-y-5">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             {{-- Community Name --}}
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-2">Community Name</label>
+              <label class="block text-xs font-semibold text-slate-700 mb-2">Community Name *</label>
               <input 
                 type="text" 
                 name="name" 
-                value="{{ $community['name'] }}" 
+                id="comm-name-input"
+                value="{{ old('name', $community['name']) }}" 
+                required
+                placeholder="e.g. Dubai Creek Harbour"
                 class="w-full bg-[#FAF8F5] border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-[13px] text-slate-800 focus:outline-none focus:border-[#C5A47E]"
               >
             </div>
@@ -90,7 +100,9 @@
               <input 
                 type="text" 
                 name="slug" 
-                value="{{ $community['slug'] }}" 
+                id="comm-slug-input"
+                value="{{ old('slug', $community['slug']) }}" 
+                placeholder="auto-generated-from-name"
                 class="w-full bg-[#FAF8F5] border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-[13px] text-slate-800 focus:outline-none focus:border-[#C5A47E]"
               >
             </div>
@@ -116,7 +128,7 @@
               <input 
                 type="text" 
                 name="meta_title" 
-                value="Properties for sale in {{ $community['name'] }} | Top Off Plan Properties" 
+                value="{{ $community['meta_title'] ?? (!empty($community['name']) ? 'Properties for sale in ' . $community['name'] . ' | Top Off Plan Properties' : '') }}" 
                 class="w-full bg-[#FAF8F5] border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-[13px] text-slate-800 focus:outline-none focus:border-[#C5A47E]"
               >
             </div>
@@ -926,12 +938,14 @@
         {{-- Save Button --}}
         <div class="mt-8 pt-5 border-t border-slate-100 flex items-center justify-between">
           <button type="submit" class="px-6 py-3 rounded-xl bg-[#C5A47E] hover:bg-[#b8956e] text-white text-xs sm:text-sm font-semibold shadow-xs transition-colors cursor-pointer">
-            Save Changes
+            {{ !empty($isNew) ? 'Create & Publish Community' : 'Save Changes' }}
           </button>
 
+          @if(empty($isNew))
           <a href="{{ $community['url'] }}" target="_blank" class="text-xs font-semibold text-blue-600 hover:underline">
             View Live Page ↗
           </a>
+          @endif
         </div>
 
       </form>
@@ -947,16 +961,18 @@
   // Drag and Drop Logic for Column A -> Column S
   function allowDrop(ev) {
     ev.preventDefault();
+    if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'move';
   }
 
   function drag(ev) {
-    ev.dataTransfer.setData("text/plain", ev.target.id);
+    window.__luxDraggedEl = ev.currentTarget;
+    if (ev.dataTransfer) ev.dataTransfer.setData("text/plain", ev.currentTarget.id);
   }
 
   function drop(ev, zone) {
     ev.preventDefault();
-    const id = ev.dataTransfer.getData("text/plain");
-    const draggedEl = document.getElementById(id);
+    const id = ev.dataTransfer ? ev.dataTransfer.getData("text/plain") : '';
+    const draggedEl = (id ? document.getElementById(id) : null) || window.__luxDraggedEl;
     if (!draggedEl) return;
 
     let targetZone = zone === 's' ? document.getElementById('dropzone-s') : document.getElementById('dropzone-a');
@@ -968,8 +984,8 @@
 
   function dropReady(ev, zone) {
     ev.preventDefault();
-    const id = ev.dataTransfer.getData("text/plain");
-    const draggedEl = document.getElementById(id);
+    const id = ev.dataTransfer ? ev.dataTransfer.getData("text/plain") : '';
+    const draggedEl = (id ? document.getElementById(id) : null) || window.__luxDraggedEl;
     if (!draggedEl) return;
 
     let targetZone = zone === 's' ? document.getElementById('dropzone-ready-s') : document.getElementById('dropzone-ready-a');
@@ -1145,6 +1161,19 @@
   }
 
   document.addEventListener('DOMContentLoaded', function() {
+    @if(!empty($isNew))
+    const nameInput = document.getElementById('comm-name-input');
+    const slugInput = document.getElementById('comm-slug-input');
+    let slugTouched = false;
+    if (slugInput) slugInput.addEventListener('input', () => { slugTouched = true; });
+    if (nameInput && slugInput) {
+      nameInput.addEventListener('input', function() {
+        if (!slugTouched) {
+          slugInput.value = this.value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        }
+      });
+    }
+    @endif
     // Initialize Summernote Lite
     if (typeof $ !== 'undefined' && $('#summernote-editor').length) {
       $('#summernote-editor').summernote({

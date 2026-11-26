@@ -14,9 +14,9 @@
       </p>
     </div>
 
-    <button type="button" class="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-[#C5A47E] hover:bg-[#b8956e] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer">
+    <a href="{{ route('admin.communities.create') }}" class="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-[#C5A47E] hover:bg-[#b8956e] text-white text-xs font-semibold shadow-xs transition-colors">
       + Add Community
-    </button>
+    </a>
   </div>
 
   {{-- White Card Container matching reference screenshot --}}
@@ -113,9 +113,13 @@
                 </a>
 
                 {{-- Delete Icon (Red) --}}
-                <button type="button" class="text-rose-500 hover:text-rose-600 p-1 transition-colors" title="Delete">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
+                <form action="{{ route('admin.communities.destroy', $c['slug']) }}" method="POST" onsubmit="return confirm('Delete {{ addslashes($c['name']) }}?')" class="inline">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="text-rose-500 hover:text-rose-600 p-1 transition-colors cursor-pointer" title="Delete">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </form>
 
                 {{-- External Link Icon (Opens frontend community page) --}}
                 <a href="{{ $c['url'] }}" target="_blank" class="text-blue-500 hover:text-blue-600 p-1 transition-colors" title="Open Public Page">

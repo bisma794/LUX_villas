@@ -1,4 +1,10 @@
 {{-- AI Villa Assessment Interactive Stepper Section --}}
+@php
+  $isEnquiryPage = ($section->key ?? '') === 'enquiry_stepper' || request()->is('enquiry*');
+@endphp
+@if($isEnquiryPage)
+  @include('sections.enquiry_stepper')
+@else
 <section class="max-w-[1080px] mx-auto px-6 py-12 md:py-16 font-inter" style="font-family: 'Lato', sans-serif;">
   
   {{-- Outer Frame Container: Rounded Top Header Bar + White Box --}}
@@ -7,7 +13,13 @@
     {{-- Top Dark Green Bar with 5 Interactive Clickable Tabs --}}
     <div class="w-full bg-[#0E3B2C] rounded-t-[16px] px-3 sm:px-6 py-2.5 flex items-center justify-between overflow-x-auto no-scrollbar">
       @php
-        $navTabs = ['Purpose', 'Preferences', 'Budget', 'Timeline', 'Results'];
+        $navTabs = [
+          !empty($c['tab_1']) ? $c['tab_1'] : 'Purpose',
+          !empty($c['tab_2']) ? $c['tab_2'] : 'Preferences',
+          !empty($c['tab_3']) ? $c['tab_3'] : 'Budget',
+          !empty($c['tab_4']) ? $c['tab_4'] : 'Timeline',
+          !empty($c['tab_5']) ? $c['tab_5'] : 'Results',
+        ];
       @endphp
       
       <div class="w-full grid grid-cols-5 gap-1.5 sm:gap-3 text-center">
@@ -31,7 +43,7 @@
       <div data-quiz-step="1" class="quiz-step-panel">
         {{-- Heading in Fraunces --}}
         <h2 class="text-2xl sm:text-3xl md:text-[34px] font-semibold text-[#0E3B2C] tracking-tight leading-tight mb-8" style="font-family: 'Fraunces', serif;">
-          1. What Is Your Main Purpose For Buying?
+          {{ !empty($c['step1_title']) ? $c['step1_title'] : '1. What Is Your Main Purpose For Buying?' }}
         </h2>
 
         {{-- 4 Grid Options --}}
@@ -552,3 +564,4 @@
   </script>
 
 </section>
+@endif

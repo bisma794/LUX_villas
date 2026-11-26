@@ -1,121 +1,168 @@
-<section class="max-w-[1280px] mx-auto px-6 pt-10 font-inter">
+<section class="max-w-[1280px] mx-auto px-6 pt-10 font-inter" id="vfs-filter-section">
   {{-- Breadcrumb: New > Villas for Sale in Dubai --}}
   <div class="flex items-center gap-2 text-xs text-neutral-500 font-inter mb-4">
-    <span class="hover:text-black cursor-pointer">New</span>
+    <a href="/" class="hover:text-black">New</a>
     <span>&gt;</span>
     <span class="text-neutral-800 font-medium">Villas for Sale in Dubai</span>
   </div>
 
-  {{-- Title Bar: Heading + Ads count + Right Controls (Clear Filters, Sort: Popular, Save Search) --}}
+  {{-- Title Bar: Heading + Live Count + Right Controls (Clear Filters, Sort: Popular, Save Search) --}}
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
     <div class="flex items-baseline flex-wrap gap-3">
       <h1 class="font-heading font-medium text-3xl md:text-[40px] text-[#0E3B2C] leading-none tracking-tight">
-        Villas for Sale in Dubai
+        {!! array_key_exists('heading_html', $c) ? $c['heading_html'] : 'Villas for Sale in Dubai' !!}
       </h1>
-      <span class="font-inter text-lg md:text-xl text-[#777777] font-normal">
-        • 14,913 Ads
+      <span id="vfs-ads-count" class="font-inter text-lg md:text-xl text-[#777777] font-normal">
+        {{ array_key_exists('count_text', $c) ? $c['count_text'] : '' }}
       </span>
     </div>
 
-    {{-- Top Right Buttons matching screenshot --}}
+    {{-- Top Right Buttons --}}
     <div class="flex items-center gap-3 shrink-0 font-inter text-xs">
-      <button type="button" class="text-[#D35B47] hover:underline font-medium cursor-pointer">
+      <button type="button" id="vfs-clear-filters" class="text-[#D35B47] hover:underline font-medium cursor-pointer">
         Clear Filters
       </button>
+
       <div class="relative">
-        <button type="button" class="inline-flex items-center gap-1.5 bg-[#0E3B2C] text-white px-4 py-2 rounded-full font-medium shadow-xs cursor-pointer">
-          <span>Sort: Popular</span>
+        <button type="button" id="vfs-sort-btn" class="inline-flex items-center gap-1.5 bg-[#0E3B2C] hover:bg-[#154a38] text-white px-4 py-2 rounded-full font-medium shadow-xs cursor-pointer transition-colors">
+          <span id="vfs-sort-label">Sort: Popular</span>
           <span class="text-[10px]">▼</span>
         </button>
+        <div id="vfs-sort-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-neutral-200 rounded-xl shadow-lg py-1.5 z-40 text-xs text-neutral-700">
+          <button type="button" data-sort="popular" class="vfs-sort-option w-full text-left px-4 py-2 hover:bg-[#FAF8F5] font-semibold text-[#0E3B2C] cursor-pointer">Popular (Default)</button>
+          <button type="button" data-sort="newest" class="vfs-sort-option w-full text-left px-4 py-2 hover:bg-[#FAF8F5] cursor-pointer">Newest Added First</button>
+          <button type="button" data-sort="price_asc" class="vfs-sort-option w-full text-left px-4 py-2 hover:bg-[#FAF8F5] cursor-pointer">Price: Low to High</button>
+          <button type="button" data-sort="price_desc" class="vfs-sort-option w-full text-left px-4 py-2 hover:bg-[#FAF8F5] cursor-pointer">Price: High to Low</button>
+        </div>
       </div>
-      <button type="button" class="inline-flex items-center gap-1.5 bg-[#E5CFB3] text-[#0E3B2C] px-4 py-2 rounded-full font-medium shadow-xs cursor-pointer hover:bg-[#d8bf9f]">
+
+      <button type="button" id="vfs-save-search" class="inline-flex items-center gap-1.5 bg-[#E5CFB3] text-[#0E3B2C] px-4 py-2 rounded-full font-medium shadow-xs cursor-pointer hover:bg-[#d8bf9f] transition-colors">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-        <span>Save Search</span>
+        <span id="vfs-save-search-label">Save Search</span>
       </button>
     </div>
   </div>
 
   {{-- Location Quick Pills --}}
-  <div class="flex flex-wrap items-center gap-2.5 mb-6 font-inter text-xs">
-    @foreach(($c['chips'] ?? ['The Valley by Emaar (1189)', 'The Oasis by Emaar (1014)', 'Mohammed Bin Rashid City (MBR City) (799)', 'Dubai South (757)']) as $chip)
-    <span class="bg-white border border-[#E8ECE9] text-neutral-700 px-4 py-2 rounded-[8px] cursor-pointer hover:border-[#0E3B2C] transition-colors shadow-2xs">
-      {{ $chip }}
-    </span>
+  @php
+    $defaultChips = $c['chips'] ?? [
+      'The Valley (3)',
+      'Dubai Hills Estate (2)',
+      'Emaar South (2)',
+      'Dubai South (1)',
+    ];
+    $extraChips = [
+      'Jumeirah Golf Estates',
+      'Dubailand',
+      'R. Hills, Dubai',
+    ];
+  @endphp
+  <div class="flex flex-wrap items-center gap-2.5 mb-6 font-inter text-xs" id="vfs-location-pills">
+    @foreach($defaultChips as $chip)
+      @php $chipClean = trim(preg_replace('/\s*\(\d+\)\s*$/', '', $chip)); @endphp
+      <button type="button" data-chip="{{ strtolower($chipClean) }}" class="vfs-chip bg-white border border-[#E8ECE9] text-neutral-700 px-4 py-2 rounded-[8px] cursor-pointer hover:border-[#0E3B2C] transition-colors shadow-2xs">
+        {{ $chip }}
+      </button>
     @endforeach
-    <button type="button" class="bg-[#0E3B2C] text-white px-5 py-2 rounded-full font-medium text-xs hover:bg-[#154a38] transition-colors cursor-pointer shadow-xs">
+    @foreach($extraChips as $echip)
+      @php $echipClean = trim(preg_replace('/\s*\(\d+\)\s*$/', '', $echip)); @endphp
+      <button type="button" data-chip="{{ strtolower($echipClean) }}" class="vfs-chip vfs-extra-chip hidden bg-white border border-[#E8ECE9] text-neutral-700 px-4 py-2 rounded-[8px] cursor-pointer hover:border-[#0E3B2C] transition-colors shadow-2xs">
+        {{ $echip }}
+      </button>
+    @endforeach
+    <button type="button" id="vfs-view-more-chips" class="bg-[#0E3B2C] text-white px-5 py-2 rounded-full font-medium text-xs hover:bg-[#154a38] transition-colors cursor-pointer shadow-xs">
       View More
     </button>
   </div>
 
-  {{-- Main Filter Panel (Outer rounded white card) --}}
+  {{-- Main Filter Panel --}}
   <div class="bg-white border border-[#EBECEB] rounded-[14px] p-3.5 shadow-[0_2px_12px_rgba(0,0,0,0.03)] mb-4 font-inter">
     <div class="flex flex-wrap items-center gap-2.5">
       
       {{-- All Categories dropdown --}}
       <div class="relative">
-        <select class="bg-transparent border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 pr-7 appearance-none cursor-pointer hover:border-neutral-300 focus:outline-none">
-          <option>All Categories</option>
-          <option>Villas</option>
-          <option>Townhouses</option>
+        <select id="vfs-category" class="bg-transparent border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 pr-7 appearance-none cursor-pointer hover:border-neutral-300 focus:outline-none">
+          <option value="">All Categories</option>
+          <option value="villa">Villas</option>
+          <option value="townhouse">Townhouses</option>
         </select>
         <span class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-neutral-400 text-[10px]">▼</span>
       </div>
 
-      {{-- Property Type --}}
-      <div class="border border-[#E8ECE9] text-neutral-600 text-xs font-medium rounded-[8px] px-3.5 py-2.5 cursor-pointer hover:border-neutral-300">
-        Property Type
-      </div>
-
-      {{-- Beds --}}
+      {{-- Property Type dropdown --}}
       <div class="relative">
-        <select class="bg-transparent border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 pr-7 appearance-none cursor-pointer hover:border-neutral-300 focus:outline-none">
-          <option>Beds</option>
-          <option>3 Beds</option>
-          <option>4 Beds</option>
-          <option>5+ Beds</option>
+        <select id="vfs-prop-type" class="bg-transparent border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 pr-7 appearance-none cursor-pointer hover:border-neutral-300 focus:outline-none">
+          <option value="">Property Type</option>
+          <option value="villa">Luxury Villa</option>
+          <option value="townhouse">Townhouse</option>
+          <option value="golf">Golf Estate</option>
         </select>
         <span class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-neutral-400 text-[10px]">▼</span>
       </div>
 
-      {{-- Price --}}
+      {{-- Beds dropdown --}}
       <div class="relative">
-        <select class="bg-transparent border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 pr-7 appearance-none cursor-pointer hover:border-neutral-300 focus:outline-none">
-          <option>Price</option>
-          <option>Under AED 3M</option>
-          <option>AED 3M - 6M</option>
-          <option>AED 6M+</option>
+        <select id="vfs-beds" class="bg-transparent border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 pr-7 appearance-none cursor-pointer hover:border-neutral-300 focus:outline-none">
+          <option value="">Beds</option>
+          <option value="3">3 Beds</option>
+          <option value="4">4 Beds</option>
+          <option value="5">5+ Beds</option>
         </select>
         <span class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-neutral-400 text-[10px]">▼</span>
       </div>
 
-      {{-- Payment Plan --}}
+      {{-- Price dropdown --}}
       <div class="relative">
-        <select class="bg-transparent border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 pr-7 appearance-none cursor-pointer hover:border-neutral-300 focus:outline-none">
-          <option>Payment Plan</option>
-          <option>Cash</option>
-          <option>Post Handover</option>
+        <select id="vfs-price" class="bg-transparent border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 pr-7 appearance-none cursor-pointer hover:border-neutral-300 focus:outline-none">
+          <option value="">Price</option>
+          <option value="under3">Under AED 3M</option>
+          <option value="3to8">AED 3M - 8M</option>
+          <option value="8plus">AED 8M+</option>
+        </select>
+        <span class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-neutral-400 text-[10px]">▼</span>
+      </div>
+
+      {{-- Payment Plan dropdown --}}
+      <div class="relative">
+        <select id="vfs-payment" class="bg-transparent border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 pr-7 appearance-none cursor-pointer hover:border-neutral-300 focus:outline-none">
+          <option value="">Payment Plan</option>
+          <option value="cash">Cash / Mortgage (Ready)</option>
+          <option value="plan">Off-Plan / Post Handover</option>
         </select>
         <span class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-neutral-400 text-[10px]">▼</span>
       </div>
 
       {{-- Filters Button --}}
-      <button type="button" class="inline-flex items-center gap-1.5 border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 hover:border-neutral-300 cursor-pointer">
+      <button type="button" id="vfs-more-filters-btn" class="inline-flex items-center gap-1.5 border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-3.5 py-2.5 hover:border-[#0E3B2C] cursor-pointer transition-colors">
         <span>Filters</span>
         <svg class="w-3.5 h-3.5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
       </button>
 
-      {{-- Sort/Swap Icon Button --}}
-      <button type="button" class="w-9 h-9 border border-[#E8ECE9] rounded-[8px] flex items-center justify-center text-neutral-600 hover:border-neutral-300 cursor-pointer">
+      {{-- Quick Price Swap/Sort Icon Button --}}
+      <button type="button" id="vfs-quick-sort-btn" title="Toggle Price Low/High" class="w-9 h-9 border border-[#E8ECE9] rounded-[8px] flex items-center justify-center text-neutral-600 hover:border-[#0E3B2C] cursor-pointer transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
       </button>
 
       {{-- Map Toggle Button --}}
-      <button type="button" class="ml-auto inline-flex items-center gap-2 border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-4 py-2 hover:border-neutral-300 cursor-pointer">
+      <button type="button" id="vfs-map-toggle-btn" class="ml-auto inline-flex items-center gap-2 border border-[#E8ECE9] text-neutral-700 text-xs font-medium rounded-[8px] px-4 py-2 hover:border-[#0E3B2C] cursor-pointer transition-colors">
         <span>Map</span>
         <svg class="w-3.5 h-3.5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
       </button>
 
     </div>
+  </div>
+
+  {{-- Collapsible Interactive Map Panel --}}
+  <div id="vfs-map-panel" class="hidden mb-4 rounded-[14px] overflow-hidden border border-[#EBECEB] shadow-xs bg-[#E5F2F8] relative h-[280px]">
+    <iframe
+      src="https://maps.google.com/maps?q=Dubai+Villa+Communities&z=11&output=embed"
+      class="w-full h-full border-0"
+      loading="lazy"
+      title="Dubai Villa Communities Map"
+    ></iframe>
+    <button type="button" onclick="document.getElementById('vfs-map-panel').classList.add('hidden')" class="absolute top-3 right-3 bg-white/95 text-neutral-700 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm border border-neutral-200 cursor-pointer hover:bg-white">
+      Close Map ✕
+    </button>
   </div>
 
   {{-- Keyword Search Row --}}
@@ -124,26 +171,26 @@
       <span class="absolute inset-y-0 left-4 flex items-center text-neutral-400">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       </span>
-      <input type="text" placeholder="Search by community project or developer" class="w-full bg-white border border-[#EBECEB] rounded-[8px] pl-11 pr-4 py-3 text-xs md:text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-[#0E3B2C] shadow-2xs">
+      <input type="text" id="vfs-search-input" placeholder="Search by community project or developer" class="w-full bg-white border border-[#EBECEB] rounded-[8px] pl-11 pr-4 py-3 text-xs md:text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-[#0E3B2C] shadow-2xs">
     </div>
-    <button type="button" class="bg-[#0E3B2C] hover:bg-[#154a38] text-white px-8 py-3 rounded-[8px] text-sm font-medium transition-colors cursor-pointer shadow-xs">
+    <button type="button" id="vfs-search-btn" class="bg-[#0E3B2C] hover:bg-[#154a38] text-white px-8 py-3 rounded-[8px] text-sm font-medium transition-colors cursor-pointer shadow-xs">
       Search
     </button>
   </div>
 
   {{-- Status Tabs Row (ALL, READY, OFF-PLAN, RE-SALE) & Show Verified Toggle --}}
   <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-neutral-200 font-inter text-xs">
-    <div class="flex items-center gap-6 font-semibold">
-      <button type="button" class="bg-[#0E3B2C] text-white px-5 py-2 rounded-full cursor-pointer">
+    <div class="flex items-center gap-3 sm:gap-6 font-semibold" id="vfs-status-tabs">
+      <button type="button" data-vfs-status="all" class="vfs-status-tab bg-[#0E3B2C] text-white px-5 py-2 rounded-full cursor-pointer transition-colors">
         ALL
       </button>
-      <button type="button" class="text-neutral-600 hover:text-black cursor-pointer">
+      <button type="button" data-vfs-status="ready" class="vfs-status-tab text-neutral-600 hover:text-black px-3 py-2 rounded-full cursor-pointer transition-colors">
         READY
       </button>
-      <button type="button" class="text-neutral-600 hover:text-black cursor-pointer">
+      <button type="button" data-vfs-status="offplan" class="vfs-status-tab text-neutral-600 hover:text-black px-3 py-2 rounded-full cursor-pointer transition-colors">
         OFF-PLAN
       </button>
-      <button type="button" class="text-neutral-600 hover:text-black cursor-pointer">
+      <button type="button" data-vfs-status="resale" class="vfs-status-tab text-neutral-600 hover:text-black px-3 py-2 rounded-full cursor-pointer transition-colors">
         RE-SALE
       </button>
     </div>
@@ -152,7 +199,7 @@
     <div class="flex items-center gap-2.5 text-xs text-neutral-600">
       <span>Show Verified First</span>
       <label class="relative inline-flex items-center cursor-pointer">
-        <input type="checkbox" class="sr-only peer">
+        <input type="checkbox" id="vfs-verified-toggle" class="sr-only peer">
         <div class="w-9 h-5 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0E3B2C]"></div>
       </label>
     </div>
@@ -168,59 +215,103 @@
   <div class="lg:col-span-8 space-y-6">
 
     @php
-      $topListings = [
-        [
-          'image' => 'images/listing-pool-villa.jpg',
+      $parseMillions = function (string $priceStr): float {
+        if (preg_match('/([\d,.]+)\s*M/i', $priceStr, $m)) {
+          return (float) str_replace(',', '', $m[1]);
+        }
+        if (preg_match('/([\d,]+)/', $priceStr, $m)) {
+          $raw = (float) str_replace(',', '', $m[1]);
+          return $raw > 1000 ? round($raw / 1000000, 2) : $raw;
+        }
+        return 0.0;
+      };
+      $parseMaxBeds = function (string $str): int {
+        if (preg_match_all('/\d+/', $str, $m) && !empty($m[0])) {
+          return (int) max($m[0]);
+        }
+        return 4;
+      };
+
+      $cleanCardImages = ['images/arabian ranch.png', 'images/apartment.jpg'];
+      $pickCardImage = function (?string $current, int $idx) use ($cleanCardImages): string {
+        if (!empty($current) && (str_contains($current, '_offplan_') || str_contains($current, '_listing_'))) {
+          return $current;
+        }
+        return $cleanCardImages[$idx % 2];
+      };
+
+      $offplanStore = \App\Http\Controllers\Admin\EntityController::getOffplanProjectStore();
+      $listingStore = \App\Http\Controllers\Admin\EntityController::getListingProjectStore();
+
+      $dynamicListings = [];
+      $cardIdx = 0;
+      foreach ($offplanStore as $oSlug => $proj) {
+        $dev = $proj['stats'][0]['lower'] ?? ($proj['stats'][0]['upper'] ?? 'Emaar');
+        $price = $proj['stats'][1]['upper'] ?? 'AED 1,099,888';
+        $units = $proj['stats'][2]['upper'] ?? '1-4br';
+        $handover = $proj['stats'][3]['upper'] ?? '2030 Q1';
+        $isTown = (($proj['property_category'] ?? '') === 'townhouse' || str_contains(strtolower(($proj['name'] ?? '') . ' ' . $oSlug), 'townhouse'));
+        $catLabel = $isTown ? 'Townhouse' : 'Villa';
+        $loc = !empty($proj['usps'][2]) ? $proj['usps'][2] : ($proj['location_text'] ?? ($proj['city'] ?? 'Dubai'));
+        $isGolf = str_contains(strtolower(($proj['name'] ?? '') . ' ' . $loc), 'golf') || str_contains(strtolower(($proj['name'] ?? '') . ' ' . $loc), 'fairway');
+        $cImg = $pickCardImage($proj['gallery_main'] ?? null, $cardIdx);
+        $dynamicListings[] = [
+          'idx' => $cardIdx++,
+          'image' => $cImg,
           'tag' => 'OFF-PLAN | Initial Sale',
-          'price' => 'AED 4,000,000',
-          'beds_baths' => 'Villa 🛏 5 🛁 6 | Built-up: 1,991 sqft Plot: 1,705 sqft',
-          'title' => '5BR Villa | R. Hills | Pool & Garden Community',
-          'location' => 'R. Hills, Dubai',
-          'authenticity' => 'Property authenticity was validated on 23rd of September',
-          'handover' => 'Q4 2028',
-          'payment_plan' => '30/70',
-          'link' => '/buy-listing'
-        ],
-        [
-          'image' => 'images/house-white.jpg',
-          'tag' => 'OFF-PLAN | Initial Sale',
-          'price' => 'AED 4,000,000',
-          'beds_baths' => 'Villa 🛏 5 🛁 6 | Built-up: 1,991 sqft Plot: 1,705 sqft',
-          'title' => '5BR Villa | R. Hills | Pool & Garden Community',
-          'location' => 'R. Hills, Dubai',
-          'authenticity' => 'Property authenticity was validated on 23rd of September',
-          'handover' => 'Q4 2028',
-          'payment_plan' => '30/70',
-          'link' => '/buy-listing'
-        ],
-        [
-          'image' => 'images/listing-villa-pool-3.jpg',
-          'tag' => 'OFF-PLAN | Initial Sale',
-          'price' => 'AED 4,000,000',
-          'beds_baths' => 'Villa 🛏 5 🛁 6 | Built-up: 1,991 sqft Plot: 1,705 sqft',
-          'title' => '5BR Villa | R. Hills | Pool & Garden Community',
-          'location' => 'R. Hills, Dubai',
-          'authenticity' => 'Property authenticity was validated on 23rd of September',
-          'handover' => 'Q4 2028',
-          'payment_plan' => '30/70',
-          'link' => '/buy-listing'
-        ],
-        [
-          'image' => 'images/listing-villa-pool-4.jpg',
-          'tag' => 'OFF-PLAN | Initial Sale',
-          'price' => 'AED 4,000,000',
-          'beds_baths' => 'Villa 🛏 5 🛁 6 | Built-up: 1,991 sqft Plot: 1,705 sqft',
-          'title' => '5BR Villa | R. Hills | Pool & Garden Community',
-          'location' => 'R. Hills, Dubai',
-          'authenticity' => 'Property authenticity was validated on 23rd of September',
-          'handover' => 'Q4 2028',
-          'payment_plan' => '30/70',
-          'link' => '/buy-listing'
-        ]
-      ];
+          'status' => 'offplan',
+          'category' => $isTown ? 'townhouse' : 'villa',
+          'prop_type' => $isTown ? 'townhouse' : ($isGolf ? 'golf' : 'villa'),
+          'beds_num' => $parseMaxBeds($units),
+          'price_m' => $parseMillions($price),
+          'payment_mode' => 'plan',
+          'verified' => '1',
+          'developer' => $dev,
+          'price' => $price,
+          'beds_baths' => $catLabel . ' | Units: ' . $units . ' | Developer: ' . $dev,
+          'title' => $proj['name'] ?? ucwords(str_replace('-', ' ', $oSlug)),
+          'location' => $loc,
+          'authenticity' => 'Off-plan DLD registered development',
+          'handover' => $handover,
+          'payment_plan' => ($proj['payment_step1_pct'] ?? '20') . '/' . ((int)($proj['payment_step2_pct'] ?? 40) + (int)($proj['payment_step3_pct'] ?? 40)),
+          'link' => $proj['url'] ?? ('/projects/' . $oSlug),
+        ];
+      }
+
+      foreach ($listingStore as $lSlug => $lItem) {
+        $loc = $lItem['location_text'] ?? (($lItem['community'] ?? 'The Valley') . ', ' . ($lItem['city'] ?? 'Dubai'));
+        $isTown = strtolower($lItem['property_type'] ?? 'villa') === 'townhouse';
+        $isGolf = str_contains(strtolower(($lItem['name'] ?? '') . ' ' . $loc), 'golf') || str_contains(strtolower(($lItem['name'] ?? '') . ' ' . $loc), 'fairway');
+        $price = $lItem['price'] ?? 'AED 2,740,000';
+        $bedsStr = (string) ($lItem['beds'] ?? '4');
+        $cImg = $pickCardImage($lItem['gallery_main'] ?? null, $cardIdx);
+        $dynamicListings[] = [
+          'idx' => $cardIdx++,
+          'image' => $cImg,
+          'tag' => $lItem['tag'] ?? 'READY TO MOVE',
+          'status' => 'ready',
+          'category' => $isTown ? 'townhouse' : 'villa',
+          'prop_type' => $isTown ? 'townhouse' : ($isGolf ? 'golf' : 'villa'),
+          'beds_num' => $parseMaxBeds($bedsStr),
+          'price_m' => $parseMillions($price),
+          'payment_mode' => 'cash',
+          'verified' => '1',
+          'developer' => $lItem['developer'] ?? 'Emaar',
+          'price' => $price,
+          'beds_baths' => ($lItem['property_type'] ?? 'Villa') . ' 🛏 ' . $bedsStr . ' 🛁 ' . ($lItem['baths'] ?? '4') . ' | Built-up: ' . ($lItem['sqft'] ?? '2,462 sq.ft'),
+          'title' => $lItem['name'] ?? ucwords(str_replace('-', ' ', $lSlug)),
+          'location' => $loc,
+          'authenticity' => $lItem['authenticity'] ?? 'Property authenticity validated by DLD Trakheesi',
+          'handover' => $lItem['handover'] ?? 'Ready to Move',
+          'payment_plan' => $lItem['payment_plan'] ?? 'Cash / Mortgage',
+          'link' => $lItem['url'] ?? ('/listing/' . $lSlug),
+        ];
+      }
+
+      $topListings = $dynamicListings;
 
       $listing5 = [
-        'image' => 'images/listing-villa-sea-5.jpg',
+        'image' => 'images/arabian ranch.png',
         'tag' => 'OFF-PLAN | Initial Sale',
         'price' => 'AED 4,000,000',
         'beds_baths' => 'Villa 🛏 5 🛁 6 | Built-up: 1,991 sqft Plot: 1,705 sqft',
@@ -233,12 +324,45 @@
       ];
     @endphp
 
-    {{-- Render Listings 1-4 --}}
+    <style>
+      .vfs-listing-card-img { height: 220px; width: 100%; }
+      @media (min-width: 768px) {
+        .vfs-listing-card { height: 280px; }
+        .vfs-listing-card-img { width: 320px; height: 280px; }
+      }
+      .vfs-promo-banner {
+        width: 100%;
+        max-width: 899px;
+        min-height: 137px;
+      }
+      @media (min-width: 640px) {
+        .vfs-promo-banner {
+          width: 899px;
+          max-width: 100%;
+          height: 137px;
+        }
+      }
+    </style>
+
+    <div id="vfs-listings-container" class="space-y-6">
     @foreach($topListings as $l)
-    <div class="bg-white border border-[#EBECEB] rounded-[14px] overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow flex flex-col md:flex-row">
+    <div
+      class="vfs-listing-card bg-white border border-[#EBECEB] rounded-[14px] overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow flex flex-col md:flex-row"
+      data-index="{{ $l['idx'] }}"
+      data-title="{{ strtolower($l['title']) }}"
+      data-location="{{ strtolower($l['location']) }}"
+      data-developer="{{ strtolower($l['developer'] ?? '') }}"
+      data-category="{{ $l['category'] }}"
+      data-prop-type="{{ $l['prop_type'] }}"
+      data-status="{{ $l['status'] }}"
+      data-beds="{{ $l['beds_num'] }}"
+      data-price-m="{{ $l['price_m'] }}"
+      data-payment="{{ $l['payment_mode'] }}"
+      data-verified="{{ $l['verified'] }}"
+    >
       
-      {{-- Image Box with Carousel Dots & Favorite Heart --}}
-      <div class="relative md:w-[320px] lg:w-[340px] h-[240px] md:h-auto shrink-0 overflow-hidden bg-neutral-100">
+      {{-- Clean Image Box (uniform size, no dots or side arrows) --}}
+      <div class="vfs-listing-card-img relative shrink-0 overflow-hidden bg-neutral-100">
         <img src="{{ asset($l['image']) }}" alt="{{ $l['title'] }}" class="w-full h-full object-cover">
         
         @if(!empty($l['tag']))
@@ -250,21 +374,10 @@
         <button type="button" class="absolute top-3.5 right-3.5 w-7 h-7 bg-white/90 hover:bg-white text-neutral-600 rounded-full flex items-center justify-center text-xs shadow-xs cursor-pointer">
           ♡
         </button>
-
-        <div class="absolute inset-y-0 inset-x-2 flex items-center justify-between pointer-events-none">
-          <button class="w-5 h-5 bg-white/80 rounded-full flex items-center justify-center text-[10px] text-neutral-800 pointer-events-auto">‹</button>
-          <button class="w-5 h-5 bg-white/80 rounded-full flex items-center justify-center text-[10px] text-neutral-800 pointer-events-auto">›</button>
-        </div>
-        <div class="absolute bottom-2.5 inset-x-0 flex items-center justify-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
-          <span class="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-          <span class="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-          <span class="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-        </div>
       </div>
 
       {{-- Card Info & Actions --}}
-      <div class="p-6 flex-1 flex flex-col justify-between font-inter">
+      <div class="p-5 flex-1 flex flex-col justify-between font-inter">
         <div>
           <div class="flex items-center justify-between">
             <p class="font-inter font-bold text-2xl text-[#10221C] tracking-tight">
@@ -277,7 +390,7 @@
           </p>
 
           <h3 class="font-inter font-semibold text-sm text-[#10221C] mt-1.5">
-            {{ $l['title'] }}
+            <a href="{{ $l['link'] }}" class="hover:underline">{{ $l['title'] }}</a>
           </h3>
 
           <p class="flex items-center gap-1 text-xs text-neutral-500 mt-1">
@@ -319,15 +432,24 @@
 
     </div>
     @endforeach
+    </div>
+
+    <div id="vfs-no-results" class="hidden bg-white border border-[#EBECEB] rounded-[14px] p-10 text-center space-y-3">
+      <p class="font-heading text-2xl text-[#10221C]">No matching properties found</p>
+      <p class="text-xs text-neutral-500">Try adjusting your filters or clearing your search query.</p>
+      <button type="button" onclick="document.getElementById('vfs-clear-filters').click()" class="inline-flex items-center px-5 py-2.5 rounded-[8px] bg-[#0E3B2C] text-white text-xs font-semibold cursor-pointer">
+        Reset All Filters
+      </button>
+    </div>
 
     {{-- Banner in continuity: "What's your property worth today?" --}}
-    <div class="bg-[#FAF8F5] border border-[#EBE8E2] rounded-[16px] p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-2xs font-inter">
+    <div class="vfs-promo-banner bg-[#FAF8F5] border border-[#EBE8E2] rounded-[16px] px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-5 overflow-hidden shadow-2xs font-inter">
       <div class="flex items-center gap-5">
-        <div class="w-20 sm:w-24 shrink-0">
-          <img src="{{ asset('images/property-worth-illustration.png') }}" alt="Property Worth" class="w-full h-auto object-contain">
+        <div class="w-28 sm:w-32 h-[105px] shrink-0 flex items-center justify-center">
+          <img src="{{ asset('images/property-worth-illustration.png') }}" alt="Property Worth" class="max-h-full w-auto object-contain">
         </div>
         <div>
-          <h3 class="font-heading font-medium text-lg sm:text-xl text-[#0E3B2C] leading-snug">
+          <h3 class="font-heading font-medium text-xl sm:text-[22px] text-[#0E3B2C] leading-snug">
             What's your property worth today?
           </h3>
           <p class="text-xs text-neutral-500 font-inter mt-1">
@@ -341,8 +463,21 @@
     </div>
 
     {{-- Render Listing 5 --}}
-    <div class="bg-white border border-[#EBECEB] rounded-[14px] overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow flex flex-col md:flex-row">
-      <div class="relative md:w-[320px] lg:w-[340px] h-[240px] md:h-auto shrink-0 overflow-hidden bg-neutral-100">
+    <div
+      class="vfs-listing-card bg-white border border-[#EBECEB] rounded-[14px] overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow flex flex-col md:flex-row"
+      data-index="99"
+      data-title="{{ strtolower($listing5['title']) }}"
+      data-location="{{ strtolower($listing5['location']) }}"
+      data-developer="emaar"
+      data-category="villa"
+      data-prop-type="villa"
+      data-status="offplan"
+      data-beds="5"
+      data-price-m="4"
+      data-payment="plan"
+      data-verified="1"
+    >
+      <div class="vfs-listing-card-img relative shrink-0 overflow-hidden bg-neutral-100">
         <img src="{{ asset($listing5['image']) }}" alt="{{ $listing5['title'] }}" class="w-full h-full object-cover">
         @if(!empty($listing5['tag']))
         <span class="absolute top-3.5 left-3.5 bg-black/60 backdrop-blur-xs text-white text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-[4px]">
@@ -352,12 +487,8 @@
         <button type="button" class="absolute top-3.5 right-3.5 w-7 h-7 bg-white/90 hover:bg-white text-neutral-600 rounded-full flex items-center justify-center text-xs shadow-xs cursor-pointer">
           ♡
         </button>
-        <div class="absolute inset-y-0 inset-x-2 flex items-center justify-between pointer-events-none">
-          <button class="w-5 h-5 bg-white/80 rounded-full flex items-center justify-center text-[10px] text-neutral-800 pointer-events-auto">‹</button>
-          <button class="w-5 h-5 bg-white/80 rounded-full flex items-center justify-center text-[10px] text-neutral-800 pointer-events-auto">›</button>
-        </div>
       </div>
-      <div class="p-6 flex-1 flex flex-col justify-between font-inter">
+      <div class="p-5 flex-1 flex flex-col justify-between font-inter">
         <div>
           <p class="font-inter font-bold text-2xl text-[#10221C] tracking-tight">
             {{ $listing5['price'] }}
@@ -562,7 +693,7 @@
     @php
       $bottomListings = [
         [
-          'image' => 'images/listing-pool-villa.jpg',
+          'image' => 'images/apartment.jpg',
           'tag' => 'OFF-PLAN | Initial Sale',
           'price' => 'AED 4,000,000',
           'beds_baths' => 'Villa 🛏 5 🛁 6 | Built-up: 1,991 sqft Plot: 1,705 sqft',
@@ -574,7 +705,7 @@
           'link' => '/buy-listing'
         ],
         [
-          'image' => 'images/listing-white-co.jpg',
+          'image' => 'images/arabian ranch.png',
           'tag' => 'OFF-PLAN | Initial Sale',
           'price' => 'AED 4,000,000',
           'beds_baths' => 'Villa 🛏 5 🛁 6 | Built-up: 1,991 sqft Plot: 1,705 sqft',
@@ -586,7 +717,7 @@
           'link' => '/buy-listing'
         ],
         [
-          'image' => 'images/listing-modern-villa.jpg',
+          'image' => 'images/apartment.jpg',
           'tag' => 'OFF-PLAN | Initial Sale',
           'price' => 'AED 4,000,000',
           'beds_baths' => 'Villa 🛏 5 🛁 6 | Built-up: 1,991 sqft Plot: 1,705 sqft',
@@ -601,9 +732,22 @@
     @endphp
 
     @foreach($bottomListings as $l)
-    <div class="bg-white border border-[#EBECEB] rounded-[14px] overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow flex flex-col md:flex-row">
+    <div
+      class="vfs-listing-card bg-white border border-[#EBECEB] rounded-[14px] overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow flex flex-col md:flex-row"
+      data-index="10{{ $loop->index }}"
+      data-title="{{ strtolower($l['title']) }}"
+      data-location="{{ strtolower($l['location']) }}"
+      data-developer="emaar"
+      data-category="villa"
+      data-prop-type="villa"
+      data-status="offplan"
+      data-beds="5"
+      data-price-m="4"
+      data-payment="plan"
+      data-verified="1"
+    >
       
-      <div class="relative md:w-[320px] lg:w-[340px] h-[240px] md:h-auto shrink-0 overflow-hidden bg-neutral-100">
+      <div class="vfs-listing-card-img relative shrink-0 overflow-hidden bg-neutral-100">
         <img src="{{ asset($l['image']) }}" alt="{{ $l['title'] }}" class="w-full h-full object-cover">
         
         @if(!empty($l['tag']))
@@ -615,20 +759,9 @@
         <button type="button" class="absolute top-3.5 right-3.5 w-7 h-7 bg-white/90 hover:bg-white text-neutral-600 rounded-full flex items-center justify-center text-xs shadow-xs cursor-pointer">
           ♡
         </button>
-
-        <div class="absolute inset-y-0 inset-x-2 flex items-center justify-between pointer-events-none">
-          <button class="w-5 h-5 bg-white/80 rounded-full flex items-center justify-center text-[10px] text-neutral-800 pointer-events-auto">‹</button>
-          <button class="w-5 h-5 bg-white/80 rounded-full flex items-center justify-center text-[10px] text-neutral-800 pointer-events-auto">›</button>
-        </div>
-        <div class="absolute bottom-2.5 inset-x-0 flex items-center justify-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
-          <span class="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-          <span class="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-          <span class="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-        </div>
       </div>
 
-      <div class="p-6 flex-1 flex flex-col justify-between font-inter">
+      <div class="p-5 flex-1 flex flex-col justify-between font-inter">
         <div>
           <p class="font-inter font-bold text-2xl text-[#10221C] tracking-tight">
             {{ $l['price'] }}
@@ -639,7 +772,7 @@
           </p>
 
           <h3 class="font-inter font-semibold text-sm text-[#10221C] mt-1.5">
-            {{ $l['title'] }}
+            <a href="{{ $l['link'] }}" class="hover:underline">{{ $l['title'] }}</a>
           </h3>
 
           <p class="flex items-center gap-1 text-xs text-neutral-500 mt-1">
@@ -804,40 +937,46 @@
 {{-- ======================================================== --}}
 <section class="max-w-[1280px] mx-auto px-6 pb-12 font-inter">
   
-  {{-- Looking to sell or rent your home? Banner --}}
-  <div class="mb-8">
-    <div class="relative bg-[#FAF8F5] border border-[#EBE8E2] rounded-[18px] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden shadow-xs">
-      
-      <div class="flex flex-col sm:flex-row items-center gap-6 md:gap-8 z-10 text-center sm:text-left">
-        <div class="w-48 sm:w-56 shrink-0 -my-4 drop-shadow-sm">
-          <img src="{{ asset('images/sell-rent-villa-exact.png') }}" alt="Looking to sell or rent" class="w-full h-auto object-contain">
+  {{-- Bottom Banner + Listing 9 aligned inside 8-cols column --}}
+  <div class="grid lg:grid-cols-12 gap-8">
+    <div class="lg:col-span-8 space-y-6">
+      {{-- Looking to sell or rent your home? Banner --}}
+      <div class="vfs-promo-banner bg-[#FAF8F5] border border-[#EBE8E2] rounded-[16px] px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-5 overflow-hidden shadow-2xs font-inter">
+        <div class="flex items-center gap-5">
+          <div class="w-28 sm:w-32 h-[105px] shrink-0 flex items-center justify-center">
+            <img src="{{ asset('images/sell-rent-villa-exact.png') }}" alt="Looking to sell or rent" class="max-h-full w-auto object-contain">
+          </div>
+          <div>
+            <h2 class="font-heading font-medium text-xl sm:text-[22px] text-[#0E3B2C] leading-snug">
+              Looking to sell or rent your home?
+            </h2>
+            <p class="text-xs text-neutral-500 font-inter mt-1">
+              Reach more buyers or renters through an expert agent.
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 class="font-heading font-medium text-2xl sm:text-3xl md:text-[34px] text-[#0E3B2C] leading-snug">
-            Looking to sell or rent your home?
-          </h2>
-          <p class="text-xs sm:text-sm text-neutral-500 font-inter mt-1.5">
-            Reach more buyers or renters through an expert agent.
-          </p>
-        </div>
-      </div>
 
-      <div class="shrink-0 z-10 w-full sm:w-auto">
-        <a href="/valuation" class="inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-[#0E3B2C] hover:bg-[#154a38] text-white text-xs sm:text-sm font-semibold font-inter px-6 py-3 rounded-[8px] transition-colors shadow-xs">
-          <span>Get started now</span>
-          <span class="text-xs">›</span>
+        <a href="/valuation" class="shrink-0 bg-[#0E3B2C] hover:bg-[#154a38] text-white text-xs font-semibold px-5 py-2.5 rounded-[6px] transition-colors shadow-xs">
+          Get started now ›
         </a>
       </div>
 
-    </div>
-  </div>
-
-  {{-- Listing 9 (Full 8-cols width or grid aligned) --}}
-  <div class="grid lg:grid-cols-12 gap-8">
-    <div class="lg:col-span-8">
-      <div class="bg-white border border-[#EBECEB] rounded-[14px] overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow flex flex-col md:flex-row">
-        <div class="relative md:w-[320px] lg:w-[340px] h-[240px] md:h-auto shrink-0 overflow-hidden bg-neutral-100">
-          <img src="{{ asset('images/listing-villa-garden-9.jpg') }}" alt="Garden Villa" class="w-full h-full object-cover">
+      <div
+        class="vfs-listing-card bg-white border border-[#EBECEB] rounded-[14px] overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow flex flex-col md:flex-row"
+        data-index="110"
+        data-title="5br villa | r. hills | pool & garden community"
+        data-location="r. hills, dubai"
+        data-developer="emaar"
+        data-category="villa"
+        data-prop-type="villa"
+        data-status="offplan"
+        data-beds="5"
+        data-price-m="4"
+        data-payment="plan"
+        data-verified="1"
+      >
+        <div class="vfs-listing-card-img relative shrink-0 overflow-hidden bg-neutral-100">
+          <img src="{{ asset('images/arabian ranch.png') }}" alt="Garden Villa" class="w-full h-full object-cover">
           <span class="absolute top-3.5 left-3.5 bg-black/60 backdrop-blur-xs text-white text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-[4px]">
             OFF-PLAN | Initial Sale
           </span>
@@ -845,7 +984,7 @@
             ♡
           </button>
         </div>
-        <div class="p-6 flex-1 flex flex-col justify-between font-inter">
+        <div class="p-5 flex-1 flex flex-col justify-between font-inter">
           <div>
             <p class="font-inter font-bold text-2xl text-[#10221C] tracking-tight">
               AED 4,000,000
@@ -894,3 +1033,268 @@
   </div>
 
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const container = document.getElementById('vfs-listings-container');
+  const cards = Array.from(document.querySelectorAll('.vfs-listing-card'));
+  const adsCountEl = document.getElementById('vfs-ads-count');
+  const noResultsEl = document.getElementById('vfs-no-results');
+
+  const searchInput = document.getElementById('vfs-search-input');
+  const searchBtn = document.getElementById('vfs-search-btn');
+  const categorySelect = document.getElementById('vfs-category');
+  const propTypeSelect = document.getElementById('vfs-prop-type');
+  const bedsSelect = document.getElementById('vfs-beds');
+  const priceSelect = document.getElementById('vfs-price');
+  const paymentSelect = document.getElementById('vfs-payment');
+  const verifiedToggle = document.getElementById('vfs-verified-toggle');
+  const clearBtn = document.getElementById('vfs-clear-filters');
+  const sortBtn = document.getElementById('vfs-sort-btn');
+  const sortMenu = document.getElementById('vfs-sort-menu');
+  const sortLabel = document.getElementById('vfs-sort-label');
+  const quickSortBtn = document.getElementById('vfs-quick-sort-btn');
+  const moreFiltersBtn = document.getElementById('vfs-more-filters-btn');
+  const mapToggleBtn = document.getElementById('vfs-map-toggle-btn');
+  const mapPanel = document.getElementById('vfs-map-panel');
+  const saveSearchBtn = document.getElementById('vfs-save-search');
+  const saveSearchLabel = document.getElementById('vfs-save-search-label');
+  const viewMoreChipsBtn = document.getElementById('vfs-view-more-chips');
+
+  let activeStatus = 'all';
+  let activeChip = '';
+  let currentSort = 'popular';
+
+  function applyFiltersAndSort() {
+    const q = (searchInput.value || '').trim().toLowerCase();
+    const cat = categorySelect.value;
+    const propType = propTypeSelect.value;
+    const beds = bedsSelect.value;
+    const priceRange = priceSelect.value;
+    const payment = paymentSelect.value;
+    const verifiedOnly = verifiedToggle.checked;
+
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const title = card.dataset.title || '';
+      const loc = card.dataset.location || '';
+      const dev = card.dataset.developer || '';
+      const cCat = card.dataset.category || '';
+      const cType = card.dataset.propType || '';
+      const cStatus = card.dataset.status || 'offplan';
+      const cBeds = parseInt(card.dataset.beds || '4', 10);
+      const cPriceM = parseFloat(card.dataset.priceM || '0');
+      const cPay = card.dataset.payment || '';
+      const cVerified = card.dataset.verified === '1';
+
+      let ok = true;
+      if (q && !(title.includes(q) || loc.includes(q) || dev.includes(q))) ok = false;
+      if (activeChip && !(loc.includes(activeChip) || title.includes(activeChip))) ok = false;
+      if (cat && cCat !== cat) ok = false;
+      if (propType && cType !== propType) ok = false;
+      if (beds === '3' && cBeds < 3) ok = false;
+      if (beds === '4' && cBeds < 4) ok = false;
+      if (beds === '5' && cBeds < 5) ok = false;
+      if (priceRange === 'under3' && !(cPriceM > 0 && cPriceM < 3)) ok = false;
+      if (priceRange === '3to8' && !(cPriceM >= 3 && cPriceM <= 8)) ok = false;
+      if (priceRange === '8plus' && !(cPriceM >= 8)) ok = false;
+      if (payment && cPay !== payment) ok = false;
+      if (activeStatus !== 'all' && cStatus !== activeStatus) ok = false;
+      if (verifiedOnly && !cVerified) ok = false;
+
+      card.classList.toggle('hidden', !ok);
+      if (ok) visibleCount++;
+    });
+
+    if (container) {
+      const topCards = Array.from(container.querySelectorAll('.vfs-listing-card'));
+      topCards.sort((a, b) => {
+        if (currentSort === 'price_asc') {
+          return parseFloat(a.dataset.priceM || 0) - parseFloat(b.dataset.priceM || 0);
+        }
+        if (currentSort === 'price_desc') {
+          return parseFloat(b.dataset.priceM || 0) - parseFloat(a.dataset.priceM || 0);
+        }
+        if (verifiedToggle.checked) {
+          const vDiff = (b.dataset.verified === '1' ? 1 : 0) - (a.dataset.verified === '1' ? 1 : 0);
+          if (vDiff !== 0) return vDiff;
+        }
+        return parseInt(a.dataset.index || 0, 10) - parseInt(b.dataset.index || 0, 10);
+      });
+      topCards.forEach(c => container.appendChild(c));
+    }
+
+    if (adsCountEl) {
+      adsCountEl.textContent = '• ' + visibleCount + (visibleCount === 1 ? ' Property' : ' Properties');
+    }
+    if (noResultsEl) {
+      noResultsEl.classList.toggle('hidden', visibleCount > 0);
+    }
+  }
+
+  // Status tabs (ALL, READY, OFF-PLAN, RE-SALE)
+  document.querySelectorAll('.vfs-status-tab').forEach(btn => {
+    btn.addEventListener('click', function() {
+      activeStatus = this.getAttribute('data-vfs-status') || 'all';
+      document.querySelectorAll('.vfs-status-tab').forEach(b => {
+        b.classList.remove('bg-[#0E3B2C]', 'text-white', 'px-5');
+        b.classList.add('text-neutral-600', 'px-3');
+      });
+      this.classList.add('bg-[#0E3B2C]', 'text-white', 'px-5');
+      this.classList.remove('text-neutral-600', 'px-3');
+      applyFiltersAndSort();
+    });
+  });
+
+  // Location quick pills
+  document.querySelectorAll('.vfs-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      const val = this.getAttribute('data-chip') || '';
+      activeChip = activeChip === val ? '' : val;
+      document.querySelectorAll('.vfs-chip').forEach(c => {
+        const isSel = c.getAttribute('data-chip') === activeChip && activeChip !== '';
+        c.classList.toggle('bg-[#0E3B2C]', isSel);
+        c.classList.toggle('text-white', isSel);
+        c.classList.toggle('border-[#0E3B2C]', isSel);
+        c.classList.toggle('bg-white', !isSel);
+        c.classList.toggle('text-neutral-700', !isSel);
+      });
+      applyFiltersAndSort();
+    });
+  });
+
+  // View More chips toggle
+  if (viewMoreChipsBtn) {
+    viewMoreChipsBtn.addEventListener('click', function() {
+      const extras = document.querySelectorAll('.vfs-extra-chip');
+      const showing = extras.length && !extras[0].classList.contains('hidden');
+      extras.forEach(el => el.classList.toggle('hidden', showing));
+      this.textContent = showing ? 'View More' : 'View Less';
+    });
+  }
+
+  // Sort dropdown & quick swap button
+  if (sortBtn && sortMenu) {
+    sortBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sortMenu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', () => sortMenu.classList.add('hidden'));
+    document.querySelectorAll('.vfs-sort-option').forEach(opt => {
+      opt.addEventListener('click', function() {
+        currentSort = this.getAttribute('data-sort') || 'popular';
+        sortLabel.textContent = 'Sort: ' + this.textContent.replace(' (Default)', '');
+        sortMenu.classList.add('hidden');
+        applyFiltersAndSort();
+      });
+    });
+  }
+
+  if (quickSortBtn) {
+    quickSortBtn.addEventListener('click', function() {
+      currentSort = currentSort === 'price_asc' ? 'price_desc' : 'price_asc';
+      sortLabel.textContent = currentSort === 'price_asc' ? 'Sort: Price Low-High' : 'Sort: Price High-Low';
+      this.classList.toggle('bg-[#0E3B2C]', true);
+      this.classList.toggle('text-white', true);
+      applyFiltersAndSort();
+    });
+  }
+
+  // Map toggle button
+  if (mapToggleBtn && mapPanel) {
+    mapToggleBtn.addEventListener('click', function() {
+      const isHidden = mapPanel.classList.contains('hidden');
+      mapPanel.classList.toggle('hidden', !isHidden);
+      this.classList.toggle('bg-[#0E3B2C]', isHidden);
+      this.classList.toggle('text-white', isHidden);
+    });
+  }
+
+  // Filters button highlights search bar & resets focus
+  if (moreFiltersBtn && searchInput) {
+    moreFiltersBtn.addEventListener('click', function() {
+      searchInput.focus();
+      document.getElementById('vfs-filter-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  // Save Search button
+  if (saveSearchBtn && saveSearchLabel) {
+    saveSearchBtn.addEventListener('click', function() {
+      try {
+        localStorage.setItem('lux_vfs_saved_search', JSON.stringify({
+          q: searchInput.value,
+          category: categorySelect.value,
+          beds: bedsSelect.value,
+          price: priceSelect.value,
+          status: activeStatus,
+          chip: activeChip,
+        }));
+      } catch (e) {}
+      saveSearchLabel.textContent = '✓ Search Saved';
+      setTimeout(() => { saveSearchLabel.textContent = 'Save Search'; }, 2200);
+    });
+  }
+
+  // Clear Filters
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function() {
+      searchInput.value = '';
+      categorySelect.value = '';
+      propTypeSelect.value = '';
+      bedsSelect.value = '';
+      priceSelect.value = '';
+      paymentSelect.value = '';
+      verifiedToggle.checked = false;
+      activeStatus = 'all';
+      activeChip = '';
+      currentSort = 'popular';
+      if (sortLabel) sortLabel.textContent = 'Sort: Popular';
+      if (quickSortBtn) {
+        quickSortBtn.classList.remove('bg-[#0E3B2C]', 'text-white');
+      }
+      document.querySelectorAll('.vfs-chip').forEach(c => {
+        c.classList.remove('bg-[#0E3B2C]', 'text-white', 'border-[#0E3B2C]');
+        c.classList.add('bg-white', 'text-neutral-700');
+      });
+      document.querySelectorAll('.vfs-status-tab').forEach(b => {
+        const isAll = b.getAttribute('data-vfs-status') === 'all';
+        b.classList.toggle('bg-[#0E3B2C]', isAll);
+        b.classList.toggle('text-white', isAll);
+        b.classList.toggle('px-5', isAll);
+        b.classList.toggle('text-neutral-600', !isAll);
+        b.classList.toggle('px-3', !isAll);
+      });
+      applyFiltersAndSort();
+    });
+  }
+
+  // Bind dropdowns & search inputs
+  [categorySelect, propTypeSelect, bedsSelect, priceSelect, paymentSelect, verifiedToggle].forEach(el => {
+    if (el) el.addEventListener('change', applyFiltersAndSort);
+  });
+  if (searchInput) {
+    searchInput.addEventListener('input', applyFiltersAndSort);
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); applyFiltersAndSort(); }
+    });
+  }
+  if (searchBtn) {
+    searchBtn.addEventListener('click', applyFiltersAndSort);
+  }
+
+  // Handle ?status=ready|offplan or ?q= from navbar links
+  const params = new URLSearchParams(window.location.search);
+  const urlStatus = (params.get('status') || '').toLowerCase();
+  const urlQ = params.get('q') || '';
+  if (urlQ && searchInput) searchInput.value = urlQ;
+  if (urlStatus) {
+    const tabBtn = document.querySelector(`.vfs-status-tab[data-vfs-status="${urlStatus}"]`);
+    if (tabBtn) tabBtn.click();
+    else applyFiltersAndSort();
+  } else {
+    applyFiltersAndSort();
+  }
+});
+</script>

@@ -41,14 +41,34 @@ class PageController extends Controller
             ->where('key', 'not like', '%faq%')
             ->where('name', 'not like', '%faq%')
             ->orderBy('name')->get();
-        return view('admin.pages.form', ['page' => new Page(['status' => 'draft']), 'sections' => $sections]);
+        return view('admin.pages.form', [
+            'page' => new Page(['status' => 'draft']),
+            'sections' => $sections,
+            'attachedIds' => [],
+        ]);
     }
 
     public function store(Request $request)
     {
         $data = $this->validated($request);
         $page = Page::create($data);
-        return redirect()->route('admin.pages.edit', $page)->with('ok', 'Page created. Now call sections from the library below.');
+
+        // Compulsory Hero section at the top for newly created dynamic pages
+        $order = 0;
+        $heroSec = Section::where('key', 'home_hero')->first() ?? Section::where('type', 'hero')->first();
+        if ($heroSec) {
+            $page->sections()->attach($heroSec->id, ['sort_order' => $order++]);
+        }
+
+        // Attach any Global Modules selected during page creation
+        foreach ((array) $request->input('selected_sections', []) as $secId) {
+            $secId = (int) $secId;
+            if ($secId > 0 && (!$heroSec || $secId !== (int) $heroSec->id)) {
+                $page->sections()->syncWithoutDetaching([$secId => ['sort_order' => $order++]]);
+            }
+        }
+
+        return redirect()->route('admin.pages.edit', $page)->with('ok', 'Page created with Hero & Footer. Now call any sections you want from the Global Modules tab.');
     }
 
     public function edit(Page $page)
@@ -58,6 +78,27 @@ class PageController extends Controller
             ->where('key', 'not like', '%faq%')
             ->where('name', 'not like', '%faq%')
             ->orderBy('name')->get();
+
+        if (in_array($page->slug, ['enquiry', 'ai-villa-assessment', 'blog'], true) || in_array($page->path, ['enquiry', 'ai-villa-assessment', 'blog'], true)) {
+            $seoIds = $page->sections
+                ->filter(fn ($s) => $s->key === 'global_seo' || $s->type === 'seo_text')
+                ->pluck('id')
+                ->all();
+            if (!empty($seoIds)) {
+                $page->sections()->detach($seoIds);
+                $page->load('sections');
+            }
+            $sections = $sections->reject(fn ($s) => $s->key === 'global_seo' || $s->type === 'seo_text')->values();
+        }
+
+        if ($page->slug === 'blog' || $page->path === 'blog') {
+            $homeComm = Section::where('key', 'home_communities')->first();
+            if ($homeComm && !$page->sections->contains('id', $homeComm->id)) {
+                $page->sections()->attach($homeComm->id, ['sort_order' => 2]);
+                $page->load('sections');
+            }
+        }
+
         return view('admin.pages.form', [
             'page' => $page,
             'sections' => $sections,
@@ -86,6 +127,15 @@ class PageController extends Controller
             $page->sections()->attach($request->section_id, ['sort_order' => $order]);
         }
         return back()->with('ok', 'Section added to the page.');
+    }
+
+    public function reorder(Request $request, Page $page)
+    {
+        $ids = array_values(array_filter(array_map('intval', (array) $request->input('order', []))));
+        foreach ($ids as $index => $secId) {
+            $page->sections()->updateExistingPivot($secId, ['sort_order' => $index]);
+        }
+        return response()->json(['ok' => true]);
     }
 
     public function detach(Page $page, Section $section)

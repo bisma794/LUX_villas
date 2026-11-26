@@ -1,60 +1,53 @@
 {{-- Project Detail Section: About this development + Expert Advice Form + Additional Project Info --}}
+@php
+  $proj = $project ?? (\App\Http\Controllers\Admin\EntityController::getOffplanProjectData('golf-vale-emaar-south'));
+  $aboutEyebrow = array_key_exists('about_eyebrow', $proj) ? $proj['about_eyebrow'] : '1, 2 and 3-bedroom apartments';
+  $aboutHeading = array_key_exists('about_heading', $proj) ? $proj['about_heading'] : 'About this development';
+  $aboutDescription = array_key_exists('about_description', $proj) ? $proj['about_description'] : '<p><strong>Golf Vale by Emaar</strong> is a residential development in Emaar South, offering 1, 2 and 3-bedroom apartments alongside a limited collection of 3-bedroom townhouses. Set within the green surroundings of the community\'s championship golf course, the development combines contemporary architecture with open fairway views and landscaped outdoor spaces.</p><p>The development comprises 262 residences, including 117 one-bedroom apartments, 117 two-bedroom apartments, 22 three-bedroom apartments and six three-bedroom townhouses. Homes range from 672 sq ft to 2,816 sq ft, giving buyers a choice from compact one-bedroom layouts through to larger family homes.</p><p>Inside, Golf Vale takes a clean and understated approach. Warm wood, textured stone, metal and glass are paired with minimalist architecture and open layouts, creating bright living spaces with a strong connection to the surrounding greenery. Large windows bring natural light into the homes and frame views across the golf course.</p><p>Residents have access to an infinity-edge swimming pool, kids\' pool, indoor and outdoor gyms, indoor and outdoor yoga areas, padel court, BBQ area and kids\' play area. The wider Emaar South community is centred around an 18-hole championship golf course and includes retail, education, healthcare, hotels and recreational facilities.</p><p>Golf Vale is located in Emaar South, approximately 5 minutes from Al Maktoum International Airport, 10 minutes from Expo City Dubai, 30 minutes from Dubai Marina, 35 minutes from Downtown Dubai and Burj Khalifa, and 45 minutes from Dubai International Airport.</p>';
+
+  $showExpertForm = isset($proj['show_form']) ? (bool)$proj['show_form'] : true;
+  $formTitle = array_key_exists('form_title', $proj) ? $proj['form_title'] : ('Get expert advice about ' . ($proj['name'] ?? 'Golf Vale Emaar South'));
+  $formSubtitle = array_key_exists('form_subtitle', $proj) ? $proj['form_subtitle'] : ('Connect with our experts to learn more about ' . ($proj['name'] ?? 'Golf Vale Emaar South') . '.');
+@endphp
 <section class="max-w-[1280px] mx-auto px-6 py-12 font-inter">
   
   {{-- 2-Column Layout: Left (About this development) + Right (Get Expert Advice Form) --}}
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
     
     {{-- Left Column: About this development (Span 8) --}}
-    <div class="lg:col-span-8">
+    <div class="{{ $showExpertForm ? 'lg:col-span-8' : 'lg:col-span-12' }}">
       
       {{-- Eyebrow --}}
       <p class="font-inter font-normal text-sm sm:text-base text-neutral-800 tracking-tight mb-2">
-        1, 2 and 3-bedroom apartments
+        {{ $aboutEyebrow }}
       </p>
 
-      {{-- Heading: Abhaya Libre SemiBold, no cursive, dark color #10221C --}}
+      {{-- Heading --}}
       <h2 class="font-heading font-semibold text-3xl sm:text-4xl md:text-[42px] text-[#10221C] tracking-tight leading-tight mb-6">
-        About this development
+        {{ $aboutHeading }}
       </h2>
 
-      {{-- Description Paragraphs: Inter font, smooth reading --}}
-      <div class="space-y-5 text-sm sm:text-[15px] text-neutral-700 leading-relaxed font-inter">
-        <p>
-          <strong>Golf Vale by Emaar</strong> is a residential development in Emaar South, offering 1, 2 and 3-bedroom apartments alongside a limited collection of 3-bedroom townhouses. Set within the green surroundings of the community's championship golf course, the development combines contemporary architecture with open fairway views and landscaped outdoor spaces.
-        </p>
-
-        <p>
-          The development comprises 262 residences, including 117 one-bedroom apartments, 117 two-bedroom apartments, 22 three-bedroom apartments and six three-bedroom townhouses. Homes range from 672 sq ft to 2,816 sq ft, giving buyers a choice from compact one-bedroom layouts through to larger family homes.
-        </p>
-
-        <p>
-          Inside, Golf Vale takes a clean and understated approach. Warm wood, textured stone, metal and glass are paired with minimalist architecture and open layouts, creating bright living spaces with a strong connection to the surrounding greenery. Large windows bring natural light into the homes and frame views across the golf course.
-        </p>
-
-        <p>
-          Residents have access to an infinity-edge swimming pool, kids' pool, indoor and outdoor gyms, indoor and outdoor yoga areas, padel court, BBQ area and kids' play area. The wider Emaar South community is centred around an 18-hole championship golf course and includes retail, education, healthcare, hotels and recreational facilities.
-        </p>
-
-        <p>
-          Golf Vale is located in Emaar South, approximately 5 minutes from Al Maktoum International Airport, 10 minutes from Expo City Dubai, 30 minutes from Dubai Marina, 35 minutes from Downtown Dubai and Burj Khalifa, and 45 minutes from Dubai International Airport.
-        </p>
+      {{-- Description Paragraphs (Summernote HTML) --}}
+      <div class="space-y-5 text-sm sm:text-[15px] text-neutral-700 leading-relaxed font-inter [&_p]:mb-4">
+        {!! $aboutDescription !!}
       </div>
 
     </div>
 
     {{-- Right Column: Expert Consultation Form Card (Span 4) --}}
+    @if($showExpertForm)
     <aside class="lg:col-span-4 sticky top-6">
       
-      {{-- Outer Card: rounded-[20px], light border, subtle shadow --}}
+      {{-- Outer Card --}}
       <div class="bg-white border border-[#E5E7EB] rounded-[20px] p-6 sm:p-7 shadow-sm">
         
         {{-- Card Header --}}
         <div>
           <h3 class="font-inter font-semibold text-lg sm:text-[19px] text-[#10221C] leading-snug">
-            Get expert advice about Golf Vale Emaar South
+            {{ $formTitle }}
           </h3>
           <p class="font-inter font-normal text-xs text-neutral-500 mt-1.5 leading-normal">
-            Connect with our experts to learn more about Golf Vale Emaar South.
+            {{ $formSubtitle }}
           </p>
         </div>
 
@@ -154,49 +147,46 @@
       </div>
 
     </aside>
+    @endif
 
   </div>
 
   {{-- Next Section: Property types (Left, Span 8) & Similar Project (Right, Span 4) --}}
+  {{-- Property Types & Similar Projects Grid --}}
   <div class="mt-16 pt-10 border-t border-neutral-200">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
       
       {{-- Left Column: Property types (Span 8) --}}
       <div class="lg:col-span-8">
-        {{-- Section Heading: Abhaya Libre SemiBold, no cursive --}}
         <h2 class="font-heading font-semibold text-3xl sm:text-4xl text-[#10221C] tracking-tight leading-tight mb-7">
-          Property types
+          {{ $proj['property_types_heading'] ?? 'Property types' }}
         </h2>
 
-        {{-- 5 Property Type Cards matching uploaded design --}}
+        {{-- Property Type Cards --}}
         <div class="space-y-4">
           @php
-            $propertyRows = [
-              ['title' => '4 Bedroom Townhouse', 'type' => 'Townhouse', 'beds' => '4 Bedroom', 'size' => '2,789 sq ft', 'price' => 'AED 5,060,000'],
-              ['title' => '4 Bedroom Townhouse', 'type' => 'Townhouse', 'beds' => '4 Bedroom', 'size' => '2,789 sq ft', 'price' => 'AED 5,060,000'],
-              ['title' => '4 Bedroom Townhouse', 'type' => 'Townhouse', 'beds' => '4 Bedroom', 'size' => '2,789 sq ft', 'price' => 'AED 5,060,000'],
-              ['title' => '4 Bedroom Townhouse', 'type' => 'Townhouse', 'beds' => '4 Bedroom', 'size' => '2,789 sq ft', 'price' => 'AED 5,060,000'],
-              ['title' => '4 Bedroom Townhouse', 'type' => 'Townhouse', 'beds' => '4 Bedroom', 'size' => '2,789 sq ft', 'price' => 'AED 5,060,000'],
-            ];
+            $propertyRows = (isset($proj['property_types']) && is_array($proj['property_types']))
+              ? $proj['property_types']
+              : [
+                  ['title' => '4 Bedroom Townhouse', 'type' => 'Townhouse', 'beds' => '4 Bedroom', 'size' => '2,789 sq ft', 'price' => 'AED 5,060,000'],
+                ];
           @endphp
 
           @foreach($propertyRows as $row)
           <div class="bg-[#F8F9FA]/60 border border-[#E5E7EB] hover:border-[#C5A47E] rounded-[18px] p-5 sm:p-6 transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {{-- Left Content Details --}}
             <div class="space-y-2">
               <h3 class="font-inter font-bold text-base sm:text-lg text-[#10221C]">
-                {{ $row['title'] }}
+                {{ $row['title'] ?? '' }}
               </h3>
               
-              {{-- Spec items separated by vertical pipes --}}
               <div class="flex items-center flex-wrap gap-x-3 gap-y-1 font-inter text-xs sm:text-[13px] text-neutral-500">
-                <span>{{ $row['type'] }}</span>
+                <span>{{ $row['type'] ?? '' }}</span>
                 <span class="text-neutral-300">|</span>
-                <span>{{ $row['beds'] }}</span>
+                <span>{{ $row['beds'] ?? '' }}</span>
                 <span class="text-neutral-300">|</span>
-                <span>{{ $row['size'] }}</span>
+                <span>{{ $row['size'] ?? '' }}</span>
                 <span class="text-neutral-300">|</span>
-                <span class="text-neutral-600 font-medium">{{ $row['price'] }}</span>
+                <span class="text-neutral-600 font-medium">{{ $row['price'] ?? '' }}</span>
                 <span class="text-neutral-300">|</span>
                 <button type="button" class="text-neutral-500 hover:text-[#C5A47E] hover:underline transition-colors cursor-pointer">
                   View Floorplan
@@ -204,7 +194,6 @@
               </div>
             </div>
 
-            {{-- Right Action Button: Enquire Now --}}
             <div class="shrink-0">
               <a 
                 href="/enquiry" 
@@ -220,61 +209,52 @@
 
       {{-- Right Column: Similar Project (Span 4) --}}
       <aside class="lg:col-span-4">
-        {{-- Section Heading: Abhaya Libre SemiBold, no cursive --}}
         <h2 class="font-heading font-semibold text-2xl sm:text-[28px] text-[#10221C] tracking-tight leading-tight mb-7">
-          Similar Project
+          {{ $proj['similar_heading'] ?? 'Similar Project' }}
         </h2>
 
-        {{-- Horizontal Cards Stack (matches uploaded design) --}}
+        {{-- Horizontal Cards Stack (Dynamic from CMS Drag & Drop Column S) --}}
         <div class="space-y-4">
           @php
-            $similarCards = [
-              [
-                'image' => 'images/listing-pool-villa.jpg',
-                'price' => 'AED 4,000,000',
-                'title' => 'Villa · 4B · Built-up: 1,991 sqft Plot: 1,705 sqft',
-                'subtitle' => '5BR Villa | R. Hills | Pool & Garden Community',
-                'location' => 'R. Hills, Dubai',
+            $assignedSimSlugs = !empty($proj['assigned_similar_projects']) && is_array($proj['assigned_similar_projects'])
+              ? $proj['assigned_similar_projects']
+              : ['the-fairway-villa', 'maple-row-villa', 'nara-townhouse', 'the-oasis-by-emaar'];
+
+            $allSimOffplan = \App\Http\Controllers\Admin\EntityController::getAvailableOffplanProjects();
+            $allSimReady = \App\Http\Controllers\Admin\EntityController::getAvailableReadyProjects();
+
+            $simMap = [];
+            foreach ($allSimOffplan as $op) {
+              $simMap[$op['slug']] = [
+                'image' => $op['image'] ?? 'images/listing-pool-villa.jpg',
+                'price' => $op['price'] ?? 'AED 4,000,000',
+                'title' => $op['specs'] ?? 'Villa · 4B · Built-up: 1,991 sqft',
+                'subtitle' => $op['name'],
+                'location' => $op['location'] ?? 'Dubai',
                 'handover' => 'Q4 2026',
                 'payment' => '20/70',
-              ],
-              [
-                'image' => 'images/listing-modern-villa.jpg',
-                'price' => 'AED 4,000,000',
-                'title' => 'Villa · 4B · Built-up: 1,991 sqft Plot: 1,705 sqft',
-                'subtitle' => '5BR Villa | R. Hills | Pool & Garden Community',
-                'location' => 'R. Hills, Dubai',
-                'handover' => 'Q4 2026',
-                'payment' => '20/70',
-              ],
-              [
-                'image' => 'images/listing-white-co.jpg',
-                'price' => 'AED 4,000,000',
-                'title' => 'Villa · 4B · Built-up: 1,991 sqft Plot: 1,705 sqft',
-                'subtitle' => '5BR Villa | R. Hills | Pool & Garden Community',
-                'location' => 'R. Hills, Dubai',
-                'handover' => 'Q4 2026',
-                'payment' => '20/70',
-              ],
-              [
-                'image' => 'images/listing-villa-pool-3.jpg',
-                'price' => 'AED 4,000,000',
-                'title' => 'Villa · 4B · Built-up: 1,991 sqft Plot: 1,705 sqft',
-                'subtitle' => '5BR Villa | R. Hills | Pool & Garden Community',
-                'location' => 'R. Hills, Dubai',
-                'handover' => 'Q4 2026',
-                'payment' => '20/70',
-              ],
-              [
-                'image' => 'images/house-exterior.jpg',
-                'price' => 'AED 4,000,000',
-                'title' => 'Villa · 4B · Built-up: 1,991 sqft Plot: 1,705 sqft',
-                'subtitle' => '5BR Villa | R. Hills | Pool & Garden Community',
-                'location' => 'R. Hills, Dubai',
-                'handover' => 'Q4 2026',
-                'payment' => '20/70',
-              ],
-            ];
+              ];
+            }
+            foreach ($allSimReady as $rp) {
+              if (!isset($simMap[$rp['slug']])) {
+                $simMap[$rp['slug']] = [
+                  'image' => $rp['image'] ?? 'images/listing-modern-villa.jpg',
+                  'price' => $rp['price'] ?? 'AED 4,000,000',
+                  'title' => $rp['specs'] ?? 'Villa · 4B · Built-up: 1,991 sqft',
+                  'subtitle' => $rp['name'],
+                  'location' => $rp['location'] ?? 'Dubai',
+                  'handover' => 'Ready',
+                  'payment' => 'Cash / Mortgage',
+                ];
+              }
+            }
+
+            $similarCards = [];
+            foreach ($assignedSimSlugs as $sSlug) {
+              if (isset($simMap[$sSlug])) {
+                $similarCards[] = $simMap[$sSlug];
+              }
+            }
           @endphp
 
           @foreach($similarCards as $card)
@@ -357,21 +337,19 @@
   {{-- Amenities & Facilities Section --}}
   <div class="mt-16 pt-10 border-t border-neutral-200">
     @php
-      $amenityList = [
-        ['name' => 'Children Play Area', 'img' => 'images/amenity-children.png'],
-        ['name' => 'Schools', 'img' => 'images/amenity-schools.png'],
-        ['name' => 'Restaurants', 'img' => 'images/amenity-restaurants.png'],
-        ['name' => 'Shopping Mall', 'img' => 'images/amenity-mall.png'],
-        ['name' => 'Sports Facilities', 'img' => 'images/amenity-sports.png'],
-        ['name' => 'Fitness Centre', 'img' => 'images/amenity-fitness.png'],
-        ['name' => 'Parking Area', 'img' => 'images/amenity-parking.png'],
-        ['name' => 'Walking Trails', 'img' => 'images/amenity-trails.png'],
-      ];
+      $allAmenitiesStore = \App\Http\Controllers\Admin\EntityController::getAmenitiesStore();
+      $assignedAmenityKeys = !empty($proj['assigned_amenities']) && is_array($proj['assigned_amenities'])
+        ? $proj['assigned_amenities']
+        : ['children-play-area', 'schools', 'restaurants', 'shopping-mall', 'sports-facilities', 'fitness-centre', 'parking-area', 'walking-trails'];
+
+      $amenityList = array_values(array_filter($allAmenitiesStore, function ($am) use ($assignedAmenityKeys) {
+        return in_array($am['key'], $assignedAmenityKeys);
+      }));
     @endphp
 
     <div class="mb-8">
       <h2 class="font-heading font-medium text-3xl sm:text-4xl text-[#0E3B2C] leading-tight">
-        Amenities &amp; Facilities
+        {{ $proj['amenities_heading'] ?? 'Amenities & Facilities' }}
       </h2>
     </div>
 
@@ -389,34 +367,60 @@
     </div>
   </div>
 
-  {{-- Map View Section --}}
+  {{-- Map View Section (Driven by Latitude & Longitude from CMS) --}}
+  @php
+    $locHeading = $proj['location_heading'] ?? 'Map View';
+    $locText = $proj['location_text'] ?? 'Fairways Vistas, Dubai Hills Estate, Dubai, UAE';
+    $latVal = trim((string) ($proj['latitude'] ?? '24.8962'));
+    $lngVal = trim((string) ($proj['longitude'] ?? '55.1614'));
+    $mapEmbedUrl = ($latVal !== '' && $lngVal !== '') ? "https://maps.google.com/maps?q={$latVal},{$lngVal}&z=13&output=embed" : '';
+  @endphp
+  @if($mapEmbedUrl !== '' || $locHeading !== '' || $locText !== '')
   <div class="mt-16 pt-10 border-t border-neutral-200">
     <div class="mb-6">
       <h2 class="font-heading font-medium text-3xl sm:text-4xl text-[#0E3B2C] leading-snug">
-        Map View
+        {{ $locHeading }}
       </h2>
       <p class="text-sm sm:text-base text-neutral-400 font-inter mt-1">
-        Fairways Vistas, Dubai Hills Estate, Dubai, UAE
+        {{ $locText }}
       </p>
     </div>
 
-    {{-- Map Container matching Golf Vale Emaar South Map Reference --}}
-    <div class="relative w-full rounded-[20px] overflow-hidden border border-[#E5E7EB] shadow-xs bg-[#EBF1F6]">
-      <img 
-        src="{{ asset('images/golf-vale-map-view.jpg') }}" 
-        alt="Golf Vale Emaar South Map View" 
-        class="w-full h-auto object-cover min-h-[380px] sm:min-h-[460px] md:min-h-[520px]"
-      >
+    @if($mapEmbedUrl !== '')
+    <div class="relative w-full rounded-[20px] overflow-hidden border border-[#E5E7EB] shadow-xs bg-[#EBF1F6] h-[380px] sm:h-[460px] md:h-[520px]">
+      <iframe 
+        src="{{ $mapEmbedUrl }}" 
+        class="w-full h-full border-0" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade"
+        title="{{ $locText }}"
+      ></iframe>
     </div>
+    @endif
   </div>
+  @endif
 
-  {{-- Payment Plan Section (All fonts Poppins, Disclaimer bg #E5E2DC) --}}
+  {{-- Payment Plan Section (Dynamic from CMS Payment Plan Tab) --}}
+  @php
+    $payHeading = $proj['payment_heading'] ?? 'Payment Plan';
+    $paySubtitle = $proj['payment_subtitle'] ?? 'For 1 Bedroom · AED 1,250,000';
+    $payOptions = $proj['payment_options_label'] ?? '3 Options';
+    $p1Pct = (int)($proj['payment_step1_pct'] ?? 20);
+    $p1Title = $proj['payment_step1_title'] ?? 'On Booking';
+    $p1Sub = $proj['payment_step1_sub'] ?? 'Step 1 · 20% paid';
+    $p2Pct = (int)($proj['payment_step2_pct'] ?? 40);
+    $p2Title = $proj['payment_step2_title'] ?? 'During Construction';
+    $p2Sub = $proj['payment_step2_sub'] ?? 'Step 2 · 60% paid';
+    $p3Pct = (int)($proj['payment_step3_pct'] ?? 40);
+    $p3Title = $proj['payment_step3_title'] ?? 'On Handover';
+    $p3Sub = $proj['payment_step3_sub'] ?? 'Step 3 · 100% paid';
+    $payDisclaimer = $proj['payment_disclaimer'] ?? 'Emaar offers a buyer-friendly payment structure designed to make luxury home ownership more accessible. 20% down payment on booking, 40% during construction, 40% payable upon handover. Transparent pricing with no hidden charges. Suitable for both investors and end-users. Professional assistance throughout the purchasing process.';
+  @endphp
   <div class="mt-16 pt-10 border-t border-neutral-200" style="font-family: 'Poppins', sans-serif;">
     
     {{-- Top Golden/Tan Header Bar --}}
     <div class="w-full bg-[#C5A47E] text-white rounded-[10px] px-6 py-4.5 sm:px-8 sm:py-5 flex items-center justify-between shadow-xs">
       <div class="flex items-center gap-3.5">
-        {{-- Card/Wallet Icon in subtle transparent white pill --}}
         <div class="w-8 h-8 rounded-[8px] bg-white/20 flex items-center justify-center shrink-0">
           <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <rect x="2" y="5" width="20" height="14" rx="2" stroke-width="2"/>
@@ -425,40 +429,33 @@
         </div>
         <div>
           <h2 class="text-lg sm:text-[21px] font-semibold tracking-normal text-white leading-tight" style="font-family: 'Poppins', sans-serif;">
-            Payment Plan
+            {{ $payHeading }}
           </h2>
           <p class="text-[11px] sm:text-xs text-white/85 font-normal mt-0.5" style="font-family: 'Poppins', sans-serif;">
-            For 1 Bedroom · AED 1,250,000
+            {{ $paySubtitle }}
           </p>
         </div>
       </div>
 
-      {{-- Right: 3 Options --}}
       <div class="text-sm sm:text-base font-medium text-white/95" style="font-family: 'Poppins', sans-serif;">
-        3 Options
+        {{ $payOptions }}
       </div>
     </div>
 
-    {{-- Segmented Multi-Color Progress Line Bar (20% Tan, 40% Deep Green, 40% Grey) --}}
+    {{-- Segmented Multi-Color Progress Line Bar --}}
     <div class="mt-6 w-full h-2.5 rounded-full overflow-hidden flex items-center bg-[#D1D5DB]">
-      {{-- 20% on booking (Tan) --}}
-      <div class="h-full bg-[#C5A47E]" style="width: 20%;"></div>
-      {{-- 40% during construction (Deep Green #0E3B2C) --}}
-      <div class="h-full bg-[#0E3B2C]" style="width: 40%;"></div>
-      {{-- 40% on handover (Grey #9CA3AF) --}}
-      <div class="h-full bg-[#9CA3AF]" style="width: 40%;"></div>
+      <div class="h-full bg-[#C5A47E]" style="width: {{ $p1Pct }}%;"></div>
+      <div class="h-full bg-[#0E3B2C]" style="width: {{ $p2Pct }}%;"></div>
+      <div class="h-full bg-[#9CA3AF]" style="width: {{ $p3Pct }}%;"></div>
     </div>
 
     {{-- 3 Payment Steps Timeline --}}
     <div class="mt-8 relative space-y-7 sm:space-y-8 pl-1">
-      
-      {{-- Vertical Connecting Line --}}
       <div class="absolute left-[19px] sm:left-[21px] top-4 bottom-4 w-[2px] bg-neutral-200 -z-0"></div>
 
-      {{-- Step 1: On Booking (20%) --}}
+      {{-- Step 1 --}}
       <div class="relative z-10 flex items-center justify-between">
         <div class="flex items-center gap-4 sm:gap-5">
-          {{-- Circular Step Icon: Tan --}}
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#C5A47E] text-white flex items-center justify-center shrink-0 shadow-xs">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
@@ -466,22 +463,21 @@
           </div>
           <div>
             <h4 class="text-sm sm:text-base font-semibold text-[#10221C] leading-snug" style="font-family: 'Poppins', sans-serif;">
-              On Booking
+              {{ $p1Title }}
             </h4>
             <p class="text-xs text-neutral-400 font-normal mt-0.5" style="font-family: 'Poppins', sans-serif;">
-              Step 1 · 20% paid
+              {{ $p1Sub }}
             </p>
           </div>
         </div>
         <div class="text-base sm:text-lg font-semibold text-[#10221C]" style="font-family: 'Poppins', sans-serif;">
-          20%
+          {{ $p1Pct }}%
         </div>
       </div>
 
-      {{-- Step 2: During Construction (40%) --}}
+      {{-- Step 2 --}}
       <div class="relative z-10 flex items-center justify-between">
         <div class="flex items-center gap-4 sm:gap-5">
-          {{-- Circular Step Icon: Deep Green #0E3B2C --}}
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0E3B2C] text-white flex items-center justify-center shrink-0 shadow-xs">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
@@ -489,22 +485,21 @@
           </div>
           <div>
             <h4 class="text-sm sm:text-base font-semibold text-[#10221C] leading-snug" style="font-family: 'Poppins', sans-serif;">
-              During Construction
+              {{ $p2Title }}
             </h4>
             <p class="text-xs text-neutral-400 font-normal mt-0.5" style="font-family: 'Poppins', sans-serif;">
-              Step 2 · 60% paid
+              {{ $p2Sub }}
             </p>
           </div>
         </div>
         <div class="text-base sm:text-lg font-semibold text-[#10221C]" style="font-family: 'Poppins', sans-serif;">
-          40%
+          {{ $p2Pct }}%
         </div>
       </div>
 
-      {{-- Step 3: On Handover (40%) --}}
+      {{-- Step 3 --}}
       <div class="relative z-10 flex items-center justify-between">
         <div class="flex items-center gap-4 sm:gap-5">
-          {{-- Circular Step Icon: Grey --}}
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#9CA3AF] text-white flex items-center justify-center shrink-0 shadow-xs">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -512,24 +507,24 @@
           </div>
           <div>
             <h4 class="text-sm sm:text-base font-semibold text-[#10221C] leading-snug" style="font-family: 'Poppins', sans-serif;">
-              On Handover
+              {{ $p3Title }}
             </h4>
             <p class="text-xs text-neutral-400 font-normal mt-0.5" style="font-family: 'Poppins', sans-serif;">
-              Step 3 · 100% paid
+              {{ $p3Sub }}
             </p>
           </div>
         </div>
         <div class="text-base sm:text-lg font-semibold text-[#10221C]" style="font-family: 'Poppins', sans-serif;">
-          40%
+          {{ $p3Pct }}%
         </div>
       </div>
 
     </div>
 
-    {{-- Disclaimer Note Box (bg color #E5E2DC, font Poppins) --}}
+    {{-- Disclaimer Note Box --}}
     <div class="mt-10 rounded-[14px] p-5 sm:p-6" style="background-color: #E5E2DC;">
       <p class="text-xs sm:text-[13px] text-neutral-700 leading-relaxed font-normal" style="font-family: 'Poppins', sans-serif;">
-        Emaar offers a buyer-friendly payment structure designed to make luxury home ownership more accessible. 20% down payment on booking, 40% during construction, 40% payable upon handover. Transparent pricing with no hidden charges. Suitable for both investors and end-users. Professional assistance throughout the purchasing process.
+        {{ $payDisclaimer }}
       </p>
     </div>
 

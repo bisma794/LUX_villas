@@ -1,3 +1,27 @@
+@php
+  $galleryMain = !empty($c['gallery_main']) ? $c['gallery_main'] : (!empty($c['gallery'][0]) && $c['gallery'][0] !== 'images/buy-gallery-main.jpg' ? $c['gallery'][0] : 'images/dubai-marina.jpg');
+  $galleryTopRight = !empty($c['gallery_top_right']) ? $c['gallery_top_right'] : (!empty($c['gallery'][1]) && $c['gallery'][1] !== 'images/buy-gallery-top-right.jpg' ? $c['gallery'][1] : 'images/house-white.jpg');
+  $galleryBottomRight = !empty($c['gallery_bottom_right']) ? $c['gallery_bottom_right'] : (!empty($c['gallery'][2]) && $c['gallery'][2] !== 'images/buy-gallery-bottom-right.jpg' ? $c['gallery'][2] : 'images/family-park.jpg');
+
+  $priceText = array_key_exists('price', $c) ? $c['price'] : 'AED 2,740,000';
+  $bedsCount = array_key_exists('beds', $c) ? $c['beds'] : '4';
+  $bathsCount = array_key_exists('baths', $c) ? $c['baths'] : '2';
+  $sqftText = array_key_exists('sqft', $c) ? $c['sqft'] : '1,004 sq.ft';
+
+  if (array_key_exists('usps', $c) && is_array($c['usps'])) {
+    $uspsDisplay = implode(' | ', array_filter($c['usps']));
+  } elseif (array_key_exists('heading_html', $c)) {
+    $uspsDisplay = strip_tags(html_entity_decode($c['heading_html'], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+  } else {
+    $uspsDisplay = 'The Valley | Prime Location | District Deal';
+  }
+
+  $subtextDisplay = array_key_exists('subtext', $c) ? $c['subtext'] : '4 Bedroom Villa for Sale in The Valley.';
+  $overviewHeading = array_key_exists('overview_heading', $c) ? $c['overview_heading'] : 'Overview';
+  $overviewBody = array_key_exists('overview_text', $c) ? $c['overview_text'] : "Engel & Voelkers is proud to present a rare opportunity to acquire a Garden Hall Villa in the prestigious Jumeirah Islands community.\n\nThis vacant property is situated on a 10,643 plot, offering enhanced privacy and stunning views of the lake. The villa features four generously sized bedrooms, a separate study room, a maid's room with private access, and three spacious living areas, providing ample space for family living and entertaining.\n\n- Garden Hall\n- 4 Bedrooms + Maid's";
+  $btnLabel = array_key_exists('button_text', $c) ? $c['button_text'] : 'See full description';
+@endphp
+
 <div class="max-w-[1280px] mx-auto px-6 pt-6 pb-16 font-inter">
 
   {{-- Breadcrumb + Right Action Controls (Save, Share, Report) matching Screenshot --}}
@@ -17,7 +41,7 @@
       <span>&gt;</span>
       <span class="text-neutral-400">Cluster</span>
       <span>&gt;</span>
-      <span class="text-neutral-700 font-medium">Lake View | Rare to Market | Garden Hall</span>
+      <span class="text-neutral-700 font-medium">{{ $uspsDisplay }}</span>
     </div>
 
     {{-- Right controls: Save, Share, Report --}}
@@ -37,21 +61,21 @@
     </div>
   </div>
 
-  {{-- Top Image Gallery Grid (1 Large Left + 2 Stacked Right) matching Screenshot 1 --}}
+  {{-- Top Image Gallery Grid (1 Large Left + 2 Stacked Right) High-Res --}}
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-10">
     
     {{-- Left Large Main Image (Col 8) --}}
     <div class="lg:col-span-8 relative aspect-[16/11] rounded-[16px] overflow-hidden bg-neutral-100 shadow-xs">
-      <img src="{{ asset('images/buy-gallery-main.jpg') }}" alt="Waterfront Skyline" class="w-full h-full object-cover">
+      <img src="{{ asset($galleryMain) }}" alt="Waterfront Skyline" class="w-full h-full object-cover">
     </div>
 
     {{-- Right 2 Stacked Images (Col 4) --}}
     <div class="lg:col-span-4 grid grid-rows-2 gap-3">
       <div class="relative rounded-[16px] overflow-hidden bg-neutral-100 shadow-xs">
-        <img src="{{ asset('images/buy-gallery-top-right.jpg') }}" alt="Villa Exterior Pool" class="w-full h-full object-cover">
+        <img src="{{ asset($galleryTopRight) }}" alt="Villa Exterior Pool" class="w-full h-full object-cover">
       </div>
       <div class="relative rounded-[16px] overflow-hidden bg-neutral-100 shadow-xs">
-        <img src="{{ asset('images/buy-gallery-bottom-right.jpg') }}" alt="Community Park & Buildings" class="w-full h-full object-cover">
+        <img src="{{ asset($galleryBottomRight) }}" alt="Community Park & Buildings" class="w-full h-full object-cover">
       </div>
     </div>
 
@@ -65,58 +89,47 @@
       
       {{-- Price --}}
       <h1 class="font-heading font-bold text-3xl sm:text-4xl md:text-[42px] text-[#0E3B2C] leading-none tracking-tight">
-        AED 2,740,000
+        {{ $priceText }}
       </h1>
 
       {{-- Specs Row: Beds, Baths, Sqft with icons --}}
       <div class="flex items-center gap-6 text-xs sm:text-sm text-neutral-600 font-medium mt-3 pb-6 border-b border-neutral-100">
         <span class="inline-flex items-center gap-1.5">
           <svg class="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-          <span>4</span>
+          <span>{{ $bedsCount }}</span>
         </span>
         <span class="inline-flex items-center gap-1.5">
           <svg class="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-          <span>2</span>
+          <span>{{ $bathsCount }}</span>
         </span>
         <span class="inline-flex items-center gap-1.5">
           <svg class="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
-          <span>1,004 sq.ft</span>
+          <span>{{ $sqftText }}</span>
         </span>
       </div>
 
-      {{-- Project Title & Subtitle --}}
+      {{-- Project Title (USPs) & Subtitle --}}
       <div class="mt-6">
         <h2 class="font-heading font-medium text-2xl sm:text-3xl text-[#0E3B2C] leading-snug">
-          The Valley | Prime Location | District Deal
+          {{ $uspsDisplay }}
         </h2>
         <p class="text-sm sm:text-base text-neutral-500 font-inter mt-1">
-          4 Bedroom Villa for Sale in The Valley.
+          {{ $subtextDisplay }}
         </p>
       </div>
 
       {{-- Overview Section --}}
       <div class="mt-10">
         <h3 class="font-heading font-semibold text-2xl text-[#0E3B2C] mb-4">
-          Overview
+          {{ $overviewHeading }}
         </h3>
         
-        <div class="text-neutral-600 text-xs sm:text-sm leading-relaxed space-y-4 font-inter">
-          <p>
-            Engel &amp; Voelkers is proud to present a rare opportunity to acquire a Garden Hall Villa in the prestigious Jumeirah Islands community.
-          </p>
-          <p>
-            This vacant property is situated on a 10,643 plot, offering enhanced privacy and stunning views of the lake. The villa features four generously sized bedrooms, a separate study room, a maid's room with private access, and three spacious living areas, providing ample space for family living and entertaining.
-          </p>
-          <div class="pt-2 space-y-1 text-neutral-700 font-medium">
-            <p>- Garden Hall</p>
-            <p>- 4 Bedrooms + Maid's</p>
-          </div>
-        </div>
+        <div class="text-neutral-600 text-xs sm:text-sm leading-relaxed space-y-3 font-inter whitespace-pre-line">{{ $overviewBody }}</div>
 
         {{-- See full description button --}}
         <div class="mt-6">
           <button type="button" class="border border-[#0E3B2C] text-[#0E3B2C] hover:bg-[#0E3B2C] hover:text-white transition-colors text-xs font-semibold px-5 py-2.5 rounded-[6px] cursor-pointer">
-            See full description
+            {{ $btnLabel }}
           </button>
         </div>
       </div>
@@ -182,22 +195,20 @@
   {{-- 1. Amenities & Facilities Section --}}
   <div class="border-t border-neutral-200 pt-12 mt-12 font-inter">
     <h3 class="font-heading font-medium text-2xl sm:text-[30px] text-[#0E3B2C] mb-6">
-      Amenities &amp; Facilities
+      {!! $c['amenities_heading'] ?? 'Amenities &amp; Facilities' !!}
     </h3>
 
-    {{-- 8 Rounded Amenities Cards Grid --}}
+    {{-- Rounded Amenities Cards Grid --}}
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
       @php
-        $amenityList = [
-          ['name' => 'Children Play Area', 'img' => 'images/amenity-children.png'],
-          ['name' => 'Schools', 'img' => 'images/amenity-schools.png'],
-          ['name' => 'Restaurants', 'img' => 'images/amenity-restaurants.png'],
-          ['name' => 'Shopping Mall', 'img' => 'images/amenity-mall.png'],
-          ['name' => 'Sports Facilities', 'img' => 'images/amenity-sports.png'],
-          ['name' => 'Fitness Centre', 'img' => 'images/amenity-fitness.png'],
-          ['name' => 'Parking Area', 'img' => 'images/amenity-parking.png'],
-          ['name' => 'Walking Trails', 'img' => 'images/amenity-trails.png'],
-        ];
+        $allAmenitiesStore = \App\Http\Controllers\Admin\EntityController::getAmenitiesStore();
+        $assignedAmenityKeys = !empty($c['assigned_amenities']) && is_array($c['assigned_amenities'])
+          ? $c['assigned_amenities']
+          : ['children-play-area', 'schools', 'restaurants', 'shopping-mall', 'sports-facilities', 'fitness-centre', 'parking-area', 'walking-trails'];
+
+        $amenityList = array_values(array_filter($allAmenitiesStore, function ($am) use ($assignedAmenityKeys) {
+          return in_array($am['key'], $assignedAmenityKeys);
+        }));
       @endphp
 
       @foreach($amenityList as $am)
@@ -214,24 +225,43 @@
   </div>
 
   {{-- 2. Property Location Section --}}
+  @php
+    $locHeading = array_key_exists('location_heading', $c) ? $c['location_heading'] : 'Property Location';
+    $locText = array_key_exists('location_text', $c) ? $c['location_text'] : 'Nice, Damac Lagoons.';
+    $latVal = !empty($c['latitude']) ? trim($c['latitude']) : '25.0245';
+    $lngVal = !empty($c['longitude']) ? trim($c['longitude']) : '55.2286';
+    $googleMapEmbedUrl = "https://maps.google.com/maps?q={$latVal},{$lngVal}&z=14&output=embed";
+    $googleMapExternalUrl = "https://www.google.com/maps/search/?api=1&query={$latVal},{$lngVal}";
+  @endphp
   <div class="border-t border-neutral-200 pt-12 mt-12 font-inter">
     <h3 class="font-heading font-medium text-2xl sm:text-[30px] text-[#0E3B2C] mb-6">
-      Property Location
+      {{ $locHeading }}
     </h3>
 
-    {{-- Map Banner Container with Location Badge & View on Map Button --}}
-    <div class="relative w-full rounded-[20px] overflow-hidden shadow-xs border border-neutral-200 bg-[#38BDF8]">
-      <img src="{{ asset('images/property-location-map-clean.png') }}" alt="Property Location Map" class="w-full h-auto object-cover min-h-[160px]">
+    {{-- Map Banner Container dynamically driven by Latitude & Longitude --}}
+    <div class="relative w-full rounded-[20px] overflow-hidden shadow-xs border border-neutral-200 bg-[#E5F2F8] h-[190px] sm:h-[220px]">
+      <iframe 
+        src="{{ $googleMapEmbedUrl }}" 
+        class="w-full h-full border-0 pointer-events-none select-none" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade"
+        title="{{ $locText }}"
+      ></iframe>
       
       {{-- Overlay Location Box --}}
       <div class="absolute inset-x-4 sm:inset-x-8 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-xs rounded-[16px] py-4 px-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md border border-neutral-100">
         <div class="flex items-center gap-3">
           <span class="text-[#B9975B] text-2xl">📍</span>
-          <span class="font-inter font-medium text-base sm:text-lg text-[#10221C]">
-            Nice, Damac Lagoons.
-          </span>
+          <div>
+            <span class="font-inter font-medium text-base sm:text-lg text-[#10221C] block">
+              {{ $locText }}
+            </span>
+            <span class="text-[11px] text-neutral-400 font-mono block">
+              Lat: {{ $latVal }} &bull; Lng: {{ $lngVal }}
+            </span>
+          </div>
         </div>
-        <a href="https://maps.google.com/?q=Damac+Lagoons+Nice" target="_blank" class="bg-[#C5A47E] hover:bg-[#b8956e] text-white text-xs sm:text-sm font-semibold font-inter px-6 py-2.5 rounded-[8px] transition-colors shadow-xs shrink-0">
+        <a href="{{ $googleMapExternalUrl }}" target="_blank" class="bg-[#C5A47E] hover:bg-[#b8956e] text-white text-xs sm:text-sm font-semibold font-inter px-6 py-2.5 rounded-[8px] transition-colors shadow-xs shrink-0">
           View on Map
         </a>
       </div>
@@ -637,5 +667,137 @@
     </div>
 
   </div>
+
+  {{-- 5. Similar Project Section (4 Cards matching Reference Design) --}}
+  @php
+    $similarHeading = !empty($c['similar_heading']) ? $c['similar_heading'] : 'Similar Project';
+    $selectedSimSlugs = !empty($c['assigned_similar_projects']) && is_array($c['assigned_similar_projects'])
+      ? $c['assigned_similar_projects']
+      : [
+          'golf-fields-by-emaar',
+          'terra-heights-by-emaar',
+          'greenville-2-at-emaar-south',
+          'golf-edge-at-emaar-south',
+        ];
+
+    $simDefaultImages = [
+      'images/similar-golf-fields.png',
+      'images/similar-terra-heights.png',
+      'images/similar-greenville-2.png',
+      'images/similar-golf-edge.png',
+    ];
+
+    $allSimOffplan = \App\Http\Controllers\Admin\EntityController::getAvailableOffplanProjects();
+    $allSimReady = \App\Http\Controllers\Admin\EntityController::getAvailableReadyProjects();
+
+    $simLookup = [];
+    foreach ($allSimOffplan as $op) {
+      $simLookup[$op['slug']] = [
+        'slug' => $op['slug'],
+        'name' => $op['name'],
+        'location' => strtoupper($op['location'] ?? 'EMAAR SOUTH, DUBAI'),
+        'price' => $op['price'] ?? 'AED 100,000',
+        'badge' => $op['badge'] ?? 'OFF-PLAN',
+        'image' => $op['image'] ?? '',
+        'url' => $op['url'] ?? '/projects/golf-vale-emaar-south',
+      ];
+    }
+    foreach ($allSimReady as $rp) {
+      if (!isset($simLookup[$rp['slug']])) {
+        $simLookup[$rp['slug']] = [
+          'slug' => $rp['slug'],
+          'name' => $rp['name'],
+          'location' => strtoupper($rp['location'] ?? 'EMAAR SOUTH, DUBAI'),
+          'price' => $rp['price'] ?? 'AED 100,000',
+          'badge' => $rp['tag'] ?? 'READY',
+          'image' => $rp['image'] ?? '',
+          'url' => $rp['url'] ?? '/listing/the-valley-prime-location',
+        ];
+      }
+    }
+
+    $similarCards = [];
+    foreach ($selectedSimSlugs as $idx => $sSlug) {
+      if (isset($simLookup[$sSlug])) {
+        $cardItem = $simLookup[$sSlug];
+        if (empty($cardItem['image']) || !str_contains($cardItem['image'], 'similar-')) {
+          $cardItem['image'] = $simDefaultImages[$idx % count($simDefaultImages)];
+        }
+        $similarCards[] = $cardItem;
+      }
+    }
+  @endphp
+
+  @if(count($similarCards) > 0)
+  <div class="border-t border-neutral-200 pt-14 mt-14 font-inter">
+    <h3 class="font-heading font-bold text-2xl sm:text-[32px] text-[#0E3B2C] mb-8">
+      {{ $similarHeading }}
+    </h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      @foreach($similarCards as $sIdx => $sim)
+      <div class="relative rounded-[18px] overflow-hidden aspect-[3/4.2] group shadow-sm bg-neutral-900 flex flex-col justify-between p-4">
+        {{-- Card Background Image --}}
+        <img 
+          src="{{ asset($sim['image']) }}" 
+          alt="{{ $sim['name'] }}" 
+          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        >
+
+        {{-- Dark Gradient Overlay at Bottom --}}
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0B1F17]/95 via-[#0B1F17]/40 to-transparent pointer-events-none"></div>
+
+        {{-- Top Row: Badge + Heart Favorite Button --}}
+        <div class="relative z-10 flex items-center justify-between">
+          <span class="bg-white text-[#10221C] text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-xs">
+            {{ $sim['badge'] }}
+          </span>
+          <button type="button" aria-label="Save project" class="w-7 h-7 rounded-full bg-white text-neutral-700 hover:text-rose-500 flex items-center justify-center shadow-xs transition-colors cursor-pointer">
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </button>
+        </div>
+
+        {{-- Bottom Content: Location, Title, Price & Call/WhatsApp Buttons --}}
+        <div class="relative z-10 text-white space-y-3 pt-12">
+          <div>
+            <p class="text-[10px] uppercase tracking-wider text-white/80 font-medium">
+              {{ $sim['location'] }}
+            </p>
+            <h4 class="font-inter font-bold text-base sm:text-[17px] text-white leading-snug mt-0.5 line-clamp-2">
+              <a href="{{ $sim['url'] }}" class="hover:underline">{{ $sim['name'] }}</a>
+            </h4>
+          </div>
+
+          <div>
+            <p class="text-[10px] text-white/75">Starting From</p>
+            <p class="font-inter font-bold text-base sm:text-lg text-white leading-tight">
+              {{ $sim['price'] }}
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5 pt-1">
+            <a 
+              href="tel:+971500000000" 
+              class="bg-white hover:bg-neutral-100 text-[#10221C] text-xs font-semibold py-2.5 rounded-[8px] flex items-center justify-center transition-colors shadow-xs"
+            >
+              Call
+            </a>
+            <a 
+              href="https://wa.me/971500000000" 
+              target="_blank" 
+              aria-label="WhatsApp" 
+              class="bg-[#56B847] hover:bg-[#49a33b] text-white py-2.5 rounded-[8px] flex items-center justify-center transition-colors shadow-xs"
+            >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.586 1.761.882 2.791.882h.001c3.181 0 5.767-2.587 5.768-5.766.001-3.181-2.585-5.768-5.769-5.768zm7.545 5.766c-.002 4.153-3.38 7.531-7.536 7.531-1.309 0-2.548-.342-3.649-.997l-4.041 1.06 1.079-3.933c-.73-1.157-1.114-2.502-1.115-3.661.002-4.153 3.38-7.531 7.536-7.531 4.154 0 7.528 3.377 7.526 7.531z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      @endforeach
+    </div>
+  </div>
+  @endif
 
 </div>

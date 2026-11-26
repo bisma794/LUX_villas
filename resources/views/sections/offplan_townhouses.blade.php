@@ -3,100 +3,29 @@
   {{-- Header: Heading & Subtitle --}}
   <div class="mb-10 max-w-3xl">
     <h2 class="font-heading font-medium text-4xl sm:text-[44px] text-[#0E3B2C] leading-tight mb-3">
-      Offplan Townhouses
+      {!! array_key_exists('heading_html', $c) ? $c['heading_html'] : 'Offplan Townhouses' !!}
     </h2>
     <p class="text-xs sm:text-sm text-neutral-500 font-inter leading-relaxed">
-      Discover premium apartments for sale in Dubai, UAE. Explore luxury residences, stunning waterfront homes, and affordable investment opportunities in prime locations with strong rental yields and long-term ROI potential.
+      {{ array_key_exists('subtext', $c) ? $c['subtext'] : 'Explore modern townhouses across Dubai master communities with flexible payment plans and strong rental yields.' }}
     </p>
   </div>
 
   @php
-    $townhouses = [
-      [
-        'tag' => 'READY',
-        'tag_bg' => 'bg-[#18392B]',
-        'image' => 'images/project-fairway-villa.jpg',
-        'title' => 'The Fairway Villa',
-        'location' => 'Villa · Jumeirah Golf Estates, Dubai',
-        'beds' => '5 Beds',
-        'baths' => '6 Baths',
-        'sqft' => '7,200 sq ft',
-        'price' => 'AED 18.5M',
-        'yield' => '5.1%',
-        'link' => '/buy-listing'
-      ],
-      [
-        'tag' => 'READY',
-        'tag_bg' => 'bg-[#18392B]',
-        'image' => 'images/project-maple-row.jpg',
-        'title' => 'Maple Row Villa',
-        'location' => 'Villa · Dubai Hills Estate, Dubai',
-        'beds' => '4 Beds',
-        'baths' => '5 Baths',
-        'sqft' => '4,100 sq ft',
-        'price' => 'AED 7.9M',
-        'yield' => '5.6%',
-        'link' => '/buy-listing'
-      ],
-      [
-        'tag' => 'OFF-PLAN',
-        'tag_bg' => 'bg-[#C5A47E]',
-        'image' => 'images/project-nara-townhouse.jpg',
-        'title' => 'Nara Townhouse',
-        'location' => 'Townhouse · The Valley, Dubai',
-        'beds' => '3 Beds',
-        'baths' => '4 Baths',
-        'sqft' => '2,100 sq ft',
-        'price' => 'AED 2.15M',
-        'yield' => '6.8%',
-        'link' => '/buy-listing'
-      ],
-      [
-        'tag' => 'READY',
-        'tag_bg' => 'bg-[#18392B]',
-        'image' => 'images/project-fairway-villa.jpg',
-        'title' => 'The Fairway Villa',
-        'location' => 'Villa · Jumeirah Golf Estates, Dubai',
-        'beds' => '5 Beds',
-        'baths' => '6 Baths',
-        'sqft' => '7,200 sq ft',
-        'price' => 'AED 18.5M',
-        'yield' => '5.1%',
-        'link' => '/buy-listing'
-      ],
-      [
-        'tag' => 'READY',
-        'tag_bg' => 'bg-[#18392B]',
-        'image' => 'images/project-maple-row.jpg',
-        'title' => 'Maple Row Villa',
-        'location' => 'Villa · Dubai Hills Estate, Dubai',
-        'beds' => '4 Beds',
-        'baths' => '5 Baths',
-        'sqft' => '4,100 sq ft',
-        'price' => 'AED 7.9M',
-        'yield' => '5.6%',
-        'link' => '/buy-listing'
-      ],
-      [
-        'tag' => 'OFF-PLAN',
-        'tag_bg' => 'bg-[#C5A47E]',
-        'image' => 'images/project-nara-townhouse.jpg',
-        'title' => 'Nara Townhouse',
-        'location' => 'Townhouse · The Valley, Dubai',
-        'beds' => '3 Beds',
-        'baths' => '4 Baths',
-        'sqft' => '2,100 sq ft',
-        'price' => 'AED 2.15M',
-        'yield' => '6.8%',
-        'link' => '/buy-listing'
-      ]
-    ];
+    $townhouses = \App\Http\Controllers\Admin\EntityController::buildProjectFilterCards(null, 'townhouse');
   @endphp
 
   {{-- 3 Columns Grid matching Reference Image --}}
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-inter">
     @foreach($townhouses as $item)
-    <div class="bg-white border border-[#E5E7EB] rounded-[16px] overflow-hidden shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between">
+    <div
+      class="project-filter-card bg-white border border-[#E5E7EB] rounded-[16px] overflow-hidden shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between"
+      data-title="{{ strtolower($item['title']) }}"
+      data-location="{{ strtolower($item['location']) }}"
+      data-type="{{ strtolower($item['type'] ?? 'townhouse') }}"
+      data-price="{{ $item['price_m'] ?? 0 }}"
+      data-handover="{{ strtolower($item['handover'] ?? '') }}"
+      data-mode="{{ strtolower($item['mode'] ?? 'offplan') }}"
+    >
       
       {{-- Card Top: Image + Tag --}}
       <div>

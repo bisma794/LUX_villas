@@ -1,0 +1,56 @@
+[
+    {
+        "id": 1,
+        "key": "children-play-area",
+        "name": "Children Play Area",
+        "img": "images/amenity-children.png"
+    },
+    {
+        "id": 2,
+        "key": "schools",
+        "name": "Schools",
+        "img": "images/amenity-schools.png"
+    },
+    {
+        "id": 3,
+        "key": "restaurants",
+        "name": "Restaurants",
+        "img": "images/amenity-restaurants.png"
+    },
+    {
+        "id": 4,
+        "key": "shopping-mall",
+        "name": "Shopping Mall",
+        "img": "images/amenity-mall.png"
+    },
+    {
+        "id": 5,
+        "key": "sports-facilities",
+        "name": "Sports Facilities",
+        "img": "images/amenity-sports.png"
+    },
+    {
+        "id": 6,
+        "key": "fitness-centre",
+        "name": "Fitness Centre",
+        "img": "images/amenity-fitness.png"
+    },
+    {
+        "id": 7,
+        "key": "parking-area",
+        "name": "Parking Area",
+        "img": "images/amenity-parking.png"
+    },
+    {
+        "id": 8,
+        "key": "walking-trails",
+        "name": "Walking Trails",
+        "img": "images/amenity-trails.png"
+    },
+    {
+        "id": 9,
+        "key": "mobile",
+        "name": "mobile",
+        "img": "images/amenity-children.png"
+    }
+]
